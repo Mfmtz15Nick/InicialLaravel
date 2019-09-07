@@ -1,0 +1,95 @@
+/*
+|==========================================================================
+| Geeklopers - Document CSS
+|==========================================================================
+|
+| - Estilos para la Vista de Login
+|
+|   Verde: #607f44;
+|
+*/
+
+h1, h2, h3, h4, h5 { }
+a, a:visited, a:focus, a:active { cursor: pointer; color: #fff; }
+a:hover { color: #fff; }
+.btn { border-radius: 0; font-size: 13px; border: 0; padding: 8px 12px;}
+.btn:focus { outline: none; box-shadow: none;}
+.btn:active { outline: none; box-shadow: none;}
+.btn:active:focus { outline: none; box-shadow: none;}
+.btn.active { outline: none; box-shadow: none;}
+
+.highlight { background-color: rgba(255,255,255,.1) !important; }
+
+.form-group .form-control { background-color: #FFF; border: 1px solid #FFF; border-radius: 5px; box-shadow: none; }
+
+
+html,body { padding: 0; margin: 0; font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif; font-size: 13px; color: #fff; background-color: #f7f7f7; line-height: 1.42857143; }
+body{background-color: #607f44; height: 100vh;}
+
+section .content { width: 300px; margin: auto; margin-top: calc(50vh - 200px); }
+section .content img { width: 300px; margin-bottom: 20px; }
+section .content input.error { color: #e11e25; border-color: #e11e25; }
+section .content button { color: #fff !important; background-color: #5B5A59; width: 200px; border-radius: 5px; transition: .5s ease;}
+section .content button:hover { background-color: #383838 !important; color: #FFF; transition: .5s ease;}
+
+footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px 0; }
+
+/* Large desktops and laptops */
+@media (min-width: 1600px) {
+  /*body { border: 2px solid brown;}/**/
+}
+/* Large desktops and laptops */
+@media (min-width: 1200px) and (max-width: 1599px) {
+  /*body { border: 2px solid yellow;}/**/
+}
+/* Portrait tablets and medium desktops */
+@media (min-width: 992px) and (max-width: 1199px) {
+  /*body { border: 2px solid green;}/**/
+}
+/* Portrait tablets and small desktops */
+@media (min-width: 768px) and (max-width: 991px) {
+  /*body { border: 2px solid cyan;}/**/
+}
+@media (max-width: 991px){
+}
+/* Landscape phones and portrait tablets */
+@media (max-width: 767px) {
+  /*body { border: 2px solid orange;}/**/
+}
+@media (max-height: 600px) {
+  section .content {  margin-top: 20px; }
+}
+@media (max-height: 510px) {
+  footer {  position: relative; bottom: initial; left: initial; right: initial; margin-top: 20px; }
+}
+/* Landscape phones and smaller */
+@media (max-width: 480px) {
+  /*body { border: 2px solid red;}/**/
+
+  footer .foot { text-align: center !important; }
+}
+
+/* Toastr custom style */
+.toast {background-color: #1ab394; border-radius: 0 !important; box-shadow: none !important; }
+.toast-success {background-color: #1ab394; }
+.toast-error {background-color: #ed5565; }
+.toast-info {background-color: #23c6c8; }
+.toast-warning {background-color: #f9ac19; }
+.toast-top-full-width {margin-top: 20px; }
+.toast-bottom-full-width {margin-bottom: 20px; }
+.toast-title {margin-bottom: 10px; text-align: center; }
+.toast-center-center {top: 50%; left: 50%; -webkit-transform: translateX(-50%) translateY(-50%); -moz-transform: translateX(-50%) translateY(-50%); -ms-transform: translateX(-50%) translateY(-50%); transform: translateX(-50%) translateY(-50%); }
+.toast-center-full-width {bottom: 12px; left: 12px }
+
+input[type="email"].error::-webkit-input-placeholder { color: #e74c3c;}
+input[type="email"].error:-moz-placeholder { color: #e74c3c;}
+input[type="email"].error::-moz-placeholder {color: #e74c3c;}
+input[type="email"].error:-ms-input-placeholder { color: #e74c3c;}
+input[type="password"].error::-webkit-input-placeholder { color: #e74c3c;}
+input[type="password"].error:-moz-placeholder { color: #e74c3c;}
+input[type="password"].error::-moz-placeholder {color: #e74c3c;}
+input[type="password"].error:-ms-input-placeholder { color: #e74c3c;}
+textarea.form-control.error::-webkit-input-placeholder { color: #e74c3c;}
+textarea.form-control.error:-moz-placeholder { color: #e74c3c;}
+textarea.form-control.error::-moz-placeholder {color: #e74c3c;}
+textarea.form-control.error:-ms-input-placeholder { color: #e74c3c;}
