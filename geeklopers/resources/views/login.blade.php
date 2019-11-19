@@ -12,7 +12,7 @@
         <meta name="webmaster" content="Geeklopers">
 
         <link rel="shortcut icon" href="{{ asset('images/icon.ico') }}">
-		<title>Botánico :: Login</title>
+		<title>Geeklpers :: Login</title>
 
 		<!-- CSS -->
 		<link rel="stylesheet" type="text/css" href="{{ asset('bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
@@ -29,7 +29,7 @@
 					<div class="col-xs-12">
 						<div class="content text-center">
 							<div class="companies">
-								<img src="{{ asset('images/logo.png') }}" alt="Botanico - logo">
+								<img src="{{ asset('images/logo-blanco.png') }}" alt="Geeklopers - logo" style="width: 75%">
 							</div>
 							<form ng-submit="login()" class="form-validate">
 								<div class="row">
@@ -56,7 +56,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-sm-6 foot text-left">
-						® 2019 Botánico
+						® 2019 Gestor
 					</div>
 					<div class="col-sm-6 foot text-right">
 						Developed by <a href="http://geeklopers.com" target="_blank">Geeklopers</a>

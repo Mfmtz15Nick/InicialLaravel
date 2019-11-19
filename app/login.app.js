@@ -43,7 +43,7 @@ login.controller( 'loginController', ['$scope', '$rootScope', '$location', '$mes
         $authentication.login( $scope.usuario, function( res ){
 
             if( res.estatus ){
-                localStorage.setItem('gjb.token', res.token);
+                localStorage.setItem('gc.token', res.token);
                 window.location.href = "admin";
 
             } else {

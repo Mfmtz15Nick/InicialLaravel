@@ -15,7 +15,7 @@
 
 		return {
 			request: function(config) {
-				config.headers.Authorization = localStorage.getItem('gjb.token');
+				config.headers.Authorization = localStorage.getItem('gc.token');
 				return config;
 			},
 			requestError: function(rejection) {
@@ -23,7 +23,7 @@
 			},
 			response: function(response) {
 				if (response.headers().authorization) {
-                    localStorage.setItem('gjb.token', response.headers().authorization);
+                    localStorage.setItem('gc.token', response.headers().authorization);
 				}
 				return response;
 			},

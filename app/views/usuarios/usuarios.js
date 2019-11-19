@@ -25,7 +25,7 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     $scope.total                  = 0;
     $scope.totalMostrarPaginado   = 2;
 
-    $scope.usuariosPaginados  = [];
+    $scope.usuariosPaginados      = [];
 
     $scope.anteriorUrl            = null;
     $scope.siguienteUrl           = null;
@@ -46,9 +46,9 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     $scope.cambiarPagina = function(url){
         $scope.cargando = true;
         $loading.show();
-        $http.get( url )
+        ModelService.custom('get', url )
             .success(function(res){
-                $scope.usuarios = res.data;
+                $scope.usuarios     = res.data;
                 $scope.anteriorUrl  = res.prev_page_url;
                 $scope.siguienteUrl = res.next_page_url;
                 $scope.paginaActual = res.current_page;
@@ -71,7 +71,7 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     if ( numero[0][0] != $scope.paginaActual ) {
         $scope.cargando = true;
         $loading.show();
-        $http.get('api/usuarios?page='+numero)
+          ModelService.custom('get', 'api/usuarios?page='+numero)
             .success(function(res){
                 $scope.usuarios               = res.data;
                 $scope.usuariosPaginados      = res.data;
@@ -95,14 +95,14 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
 
     $scope.buscarUsuarios = function(){
     if( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ){
-    $http.get('api/usuarios/'+$scope.buscar+'/buscar')
+      ModelService.custom('get', 'api/usuarios/'+$scope.buscar+'/buscar')
         .success(function(res){
             $scope.usuarios          = res.data;
             $scope.usuariosPaginados = res.data;
-            $scope.total                 = res.last_page;
-            $scope.anteriorUrl           = res.prev_page_url;
-            $scope.siguienteUrl          = res.next_page_url;
-            $scope.paginaActual          = res.current_page;
+            $scope.total             = res.last_page;
+            $scope.anteriorUrl       = res.prev_page_url;
+            $scope.siguienteUrl      = res.next_page_url;
+            $scope.paginaActual      = res.current_page;
         })
         .error(function (error) {
             if(error.texto){
@@ -117,7 +117,7 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
         $scope.actualizar();
     }
     }
-    
+
     $scope.actualizar = function() {
         $scope.init();
     };

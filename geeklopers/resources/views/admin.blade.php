@@ -12,7 +12,7 @@
         <meta name="webmaster" content="Geeklopers">
 
         <link rel="shortcut icon" href="{{ asset('images/icon.ico') }}">
-		<title>Botánico :: Administrador</title>
+		<title>Geeklpers :: Administrador</title>
 
 		<!-- CSS -->
 		<link rel="stylesheet" type="text/css" href="{{ asset('bower_components/bootstrap/dist/css/bootstrap.min.css') }}">
@@ -38,36 +38,49 @@
             </div>
         </div>
 
-    	<aside>
+    	<aside ng-click="showMenu()">
         	<div class="header">
         		<a href="#">
         			<div class="icono">
-        				<img src="{{ asset('images/logo_verde.png') }}" alt="Botánico - logo">
+        				<img src="{{ asset('images/logo-rojo.png') }}" alt="Geeklopers - logo">
         			</div>
         		</a>
         	</div>
         	<div class="section menuizquierdo">
         		<ul>
-                    <li class="title text-center" style="margin-top: -10px;">[[ login.vc_nombre ]] [[ login.vc_apellido ]]</li>
-        			<li ng-repeat="menu in menu.aside" ng-class="menu.title == 1 ? 'title' : ''">
-						<a href="[[menu.url]]" ng-if="!menu.title">
-							<i class="[[menu.icon]]"></i> <span>[[ menu.name ]]</span>
-						</a>
-						<span ng-if="menu.title">[[ menu.name ]]</span>
-					</li>
+							<li class="title text-center" style="margin-top: -10px;">[[ login.vc_nombre ]] [[ login.vc_apellido ]]</li>
+							<li ng-repeat="menu in menu.aside" ng-class="menu.title == 1 ? 'title' : ''">
+								<a href="[[menu.url]]" ng-if="!menu.title">
+								<i class="[[menu.icon]]"></i> <span>[[ menu.name ]]</span>
+								</a>
+								<span ng-if="menu.title">[[ menu.name ]]</span>
+							</li>
         		</ul>
         	</div>
     	</aside>
 
         <header>
         	<div class="buttons">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <ul>
-                            <li><a ng-click="logout()"><i class="ti-close"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
+						<div class="row">
+								<div class="col-xs-9 text-left">
+										<ul>
+											<li class="btn-menu">
+													<a no-href ng-click="showMenu()">
+															<i class="ti-menu"></i>
+													</a>
+											</li>
+										</ul>
+										<div class="texto div-nombre-proyecto">
+												<h2>Geeklopers</h2>
+										</div>
+								</div>
+								<div class="col-xs-3">
+										<ul>
+												<li class="d-inline-block btn-oscuro"><a no-href class="text-center" ng-click="nightMode();"><i class="ti-brush-alt"></i></a></li>
+												<li><a ng-click="logout()"><i class="ti-close"></i></a></li>
+										</ul>
+								</div>
+						</div>
         	</div>
         </header>
 

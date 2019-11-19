@@ -20,11 +20,11 @@ use App\Models\Generos;
 
 class UsuariosController extends Controller
 {
-	const SISTEMA 		= 1;
-	const ADMINISTRADOR = 2;
-	const ACTIVO 		= 1;
-	const INACTIVO 		= 0;
-	const DATOSXPAGINA 	= 10;
+	const SISTEMA 				= 1;
+	const ADMINISTRADOR 	= 2;
+	const ACTIVO 					= 1;
+	const INACTIVO 				= 0;
+	const DATOSXPAGINA 		= 10;
 	/**
      * Validate a new controller instance.
      *

@@ -19,7 +19,7 @@ var admin = angular.module(
 		'oc.lazyLoad',
 		'gl.util.factories',
 		'gl.util.services',
-        'gl.authentication.services',
+    'gl.authentication.services',
 		'gl.menu.factories',
 		'gl.validate.service',
 		'gl.interceptor.factories',
@@ -45,10 +45,11 @@ admin.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$interpo
 admin.run( [ '$rootScope', '$state', '$location', '$util', '$menu', '$authentication',
 	function( $rootScope, $state, $location, $util, $menu, $authentication ){
 
+		const ADMINISTRADOR = 2;
 		// Request User
         $authentication.check( function( res ){
 
-	    	if( !res || $authentication.usuario.rol.id != 2 ){
+	    	if( !res || $authentication.usuario.rol.id != ADMINISTRADOR ){
 	    		console.log('directo a login');
 	    		// window.location.href = 'login';
 	    	} else {
@@ -62,10 +63,10 @@ admin.run( [ '$rootScope', '$state', '$location', '$util', '$menu', '$authentica
 	    // INIT
 	    var init = function(){
             switch( $rootScope.usuario.rol.id ){
-                case 2 : // Adminstrador
-                        states = [].concat.call( $menu.general, $menu.admin.states );
-                        $rootScope.usuario.menu = [].concat.call( $menu.admin.navigation );
-                    break;
+                case ADMINISTRADOR : // Adminstrador
+                    states = [].concat.call( $menu.general, $menu.admin.states );
+                    $rootScope.usuario.menu = [].concat.call( $menu.admin.navigation );
+                break;
             }
             var url = $location.path().replace('/', ''),
                 position = $util.getPosition( states, 'url', url ),
@@ -129,24 +130,61 @@ admin.controller( 'adminController', ['$scope', '$rootScope', '$state', '$locati
 			$state.go('inicio');
 		};
 
-        $scope.logout = function(){
-        	$authentication.logout( function( res ){
-        		if( res ){
-							localStorage.removeItem('gjb.token');
-        			window.location.href = 'login';
-        		} else {
-        			$message.warning('No se pudo realizar el cierre de sesión.');
-        		}
-        	});
-        };
+    $scope.logout = function(){
+    	$authentication.logout( function( res ){
+    		if( res ){
+					localStorage.removeItem('gc.token');
+    			window.location.href = 'login';
+    		} else {
+    			$message.warning('No se pudo realizar el cierre de sesión.');
+    		}
+    	});
+    };
 
-        $scope.perfil = function(){
+    $scope.perfil = function(){
 
-        };
+    };
 
-        $scope.goto = function( url ){
-        	window.location.href = url;
-        };
+    $scope.goto = function( url ){
+    	window.location.href = url;
+    };
+
+		/** Función para cambiar la visualización del sistema (claro-nocturno)
+		*/
+		$scope.nightMode = function() {
+			if ($('body').hasClass('night')) {
+				$('body').removeClass('night');
+			} else {
+				$('body').addClass('night');
+			}
+		};
+		/** Función para mostrar el menu lateral en responsivo
+		*/
+		$scope.showMenu = function() {
+			if ($('body').hasClass('mobile')) {
+				if ($('body').hasClass('aside-show')) {
+					$('body').removeClass('aside-show');
+				} else {
+					$('body').addClass('aside-show');
+				}
+			}
+		};
+		/** Función para mostrar la vista responsiva del sistema
+		*/
+		$scope.vistaResponsiva = function() {
+			var width = $(window).width();
+			if (width < 992) {
+				$('body').addClass('mobile');
+			} else {
+				$('body').removeClass('mobile');
+			}
+		};
+		$(window).resize(function(){
+			$scope.vistaResponsiva();
+		});
+
+		$scope.vistaResponsiva();
+
 }]);
 
 }();
