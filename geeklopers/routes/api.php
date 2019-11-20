@@ -22,3 +22,4 @@ use Illuminate\Http\Request;
 // MENU
 
 	Route::resource('usuarios', 'UsuariosController');
+	Route::get('usuarios/{nombre}/buscar', 'UsuariosController@buscar');

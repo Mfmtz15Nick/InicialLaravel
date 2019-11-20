@@ -17,6 +17,7 @@ use App\Models\UsuariosRoles;
 use App\Models\UsuariosDetalles;
 use App\Models\UsuariosTokens;
 use App\Models\Generos;
+use App\Models\Roles;
 
 class UsuariosController extends Controller
 {
@@ -24,7 +25,7 @@ class UsuariosController extends Controller
 	const ADMINISTRADOR 	= 2;
 	const ACTIVO 					= 1;
 	const INACTIVO 				= 0;
-	const DATOSXPAGINA 		= 10;
+	const DATOSXPAGINA 		= 2;
 	/**
      * Validate a new controller instance.
      *
@@ -61,34 +62,7 @@ class UsuariosController extends Controller
 			}
 
 			// Obtener usuarios del sistema
-			$usuarios = Usuarios::join('usuariosDetalles as ud', 'usuarios.id', '=', 'ud.id_usuario')
-				->join('generos as g', 'ud.id_genero', '=', 'g.id')
-				->join('usuariosRoles as ur', 'usuarios.id', '=', 'ur.id_usuario')
-				->join('roles as r', 'ur.id_rol', '=', 'r.id')
-				->where([
-					['usuarios.id', 					'!=', self::SISTEMA],
-					['usuarios.sn_activo',		'=', self::ACTIVO],
-					['ud.sn_activo', 					'=', self::ACTIVO],
-					['g.sn_activo', 					'=', self::ACTIVO],
-					['ur.sn_activo', 					'=', self::ACTIVO],
-					['r.sn_activo', 					'=', self::ACTIVO],
-					['usuarios.sn_eliminado',	'=', self::INACTIVO],
-					['ud.sn_eliminado', 			'=', self::INACTIVO],
-					['g.sn_eliminado', 				'=', self::INACTIVO],
-					['ur.sn_eliminado', 			'=', self::INACTIVO],
-					['r.sn_eliminado', 				'=', self::INACTIVO]
-					])
-				->whereNull('usuarios.dt_eliminado')
-				->whereNull('ud.dt_eliminado')
-				->whereNull('g.dt_eliminado')
-				->whereNull('ur.dt_eliminado')
-				->whereNull('r.dt_eliminado')
-				->selectRaw('usuarios.id, ud.vc_nombre, ud.vc_apellido, ud.vc_email')
-				->orderBy('ud.vc_email')
-				->paginate(self::DATOSXPAGINA)
-				->toArray();
-
-			return $usuarios;
+			return Usuarios::Filtro()->with('rol.rol', 'detalle')->paginate(self::DATOSXPAGINA);
     }
 
 	/**
@@ -105,16 +79,15 @@ class UsuariosController extends Controller
 		}
 
 		// Obtener todos los Sexos
-		$generos = Generos::orderBy('vc_nombre')->get();
-		for ($i = 0; $i < count($generos); $i++) {
-			$generos[$i] = [
-				'id' => $generos[$i]->id,
-				'vc_nombre' => $generos[$i]->vc_nombre,
-			];
-		}
-
+		$generos 	= Generos::Filtro()->selectRaw('id, vc_nombre')->orderBy('vc_nombre')->get();
+		$roles 		= Roles::Filtro()
+												->where('id', '!=', self::SISTEMA)
+												->selectRaw('id, vc_nombre')
+												->orderBy('vc_nombre')
+												->get();
 		return [
-			'generos' => $generos
+			'roles' 	=> $roles,
+			'generos' => $generos,
 		];
 	}
 
@@ -134,11 +107,12 @@ class UsuariosController extends Controller
         // Validacion de parametros
         $validator = Validator::make((array)$body, [
             'id_genero'      		=> 'required',
+						'id_rol'      			=> 'required',
             'vc_nombre'      		=> 'required',
             'vc_apellido'    		=> 'required',
             'vc_email'       		=> 'required',
             'vc_password'    		=> 'required',
-            'vc_password_re'    	=> 'required'
+            'vc_password_re'    => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -167,7 +141,7 @@ class UsuariosController extends Controller
 							// Crear Usuario Roles
             	UsuariosRoles::create([
             		'id_usuario' 	=> $usuario->id,
-            		'id_rol'	 		=> self::ADMINISTRADOR,
+            		'id_rol'	 		=> $body->id_rol,
             		'id_creador' 	=> $body->usuario->id
             	]);
 
@@ -231,8 +205,7 @@ class UsuariosController extends Controller
 			'id_genero' 	=> $usuario->detalle->id_genero,
 			'id_rol' 			=> $usuario->rol->id_rol,
 			'vc_email' 		=> $usuario->detalle->vc_email,
-			'vc_password' => $usuario->detalle->vc_password,
-      'id_creador'	=> $body->usuario->id
+			'vc_password' => $usuario->detalle->vc_password
 		];
 
 		return $usuario;
@@ -255,6 +228,7 @@ class UsuariosController extends Controller
         // Validacion de parametros
         $validator = Validator::make((array)$body, [
             'id_genero'      		=> 'required',
+						'id_rol'      			=> 'required',
             'vc_nombre'      		=> 'required',
             'vc_apellido'    		=> 'required',
             'vc_email'       		=> 'required',
@@ -279,11 +253,8 @@ class UsuariosController extends Controller
             if( UsuariosDetalles::Filtro()->EsEmail($body->vc_email)->where('id_usuario', '!=', $id)->exists() ){
                 throw new Exception('El correo '. $body->vc_email .', ya se encuentra registrado.', 418);
             } else {
-								// Obtener el Usuario
-								$usuario = Usuarios::Filtro()->with('detalle', 'rol')->findOrFail($id);
-
 								// Obtener el detalle del Usuario
-						    $usuarioDetalle = UsuariosDetalles::Filtro()->findOrFail($usuario->detalle->id);
+						    $usuarioDetalle = UsuariosDetalles::Filtro()->where('id_usuario', $id)->first();
 						    $usuarioDetalle->sn_activo 		= self::INACTIVO;
 						    $usuarioDetalle->sn_eliminado = self::ACTIVO;
 						    $usuarioDetalle->save();
@@ -291,7 +262,7 @@ class UsuariosController extends Controller
 
 	            	// Crear nuevo detalle del Usuario
 	            	UsuariosDetalles::create([
-	            		'id_usuario' 			=> $usuario->id,
+	            		'id_usuario' 			=> $id,
 	            		'id_genero' 			=> $body->id_genero,
 	            		'vc_nombre' 			=> $body->vc_nombre,
 	            		'vc_apellido' 		=> $body->vc_apellido,
@@ -368,5 +339,23 @@ class UsuariosController extends Controller
 				return Response::json(['texto' => 'El usuario, no se pudo eliminar correctamente.'], 418);
 			}
 		}
+
+		/**
+		 * Display a listing of the resource.
+		 *
+		 * @return Response
+		 */
+			public function buscar($nombre)
+			{
+				// Verificación para el uso del Controllador
+				$body = (Object)Request::all();
+
+				if (!$this->validateController($body->usuario)) {
+				return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+				}
+
+				// Obtener usuarios del sistema
+				return Usuarios::Filtro()->with('rol.rol', 'detalle')->paginate(self::DATOSXPAGINA);
+			}
 
 }

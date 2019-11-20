@@ -30,7 +30,7 @@
 			<div class="col-sm-6 search-default">
 				<div class="input-group">
 					<span class="input-group-addon"><i class="fa fa-search fa-fw"></i></span>
-					<input type="text" class="form-control" placeholder="Buscar usuarios" ng-model="filter">
+					<input type="text" class="form-control" placeholder="Buscar usuarios..." ng-model="buscar" ng-change="buscarUsuarios()">
 				</div>
 			</div>
 		</div>
@@ -50,14 +50,16 @@
 									<th>Nombre</th>
 									<th>Apellido</th>
 									<th>Correo eléctronico</th>
+									<th>Rol</th>
 									<th width="61"></th>
 								</thead>
 								<tbody>
-									<tr ng-repeat="usuario in usuarios | filter: filter" ng-hide="usuario.id == 2">
+									<tr ng-repeat="usuario in usuarios" ng-hide="usuario.id == SISTEMA">
 										<td><i class="ti-user"></i></td>
-										<td>[[ usuario.vc_nombre ]]</td>
-										<td>[[ usuario.vc_apellido ]]</td>
-										<td>[[ usuario.vc_email ]]</td>
+										<td>[[ usuario.detalle.vc_nombre ]]</td>
+										<td>[[ usuario.detalle.vc_apellido ]]</td>
+										<td>[[ usuario.detalle.vc_email ]]</td>
+										<td>[[ usuario.rol.rol.vc_nombre ]]</td>
 										<td>
 											<a ng-click = "editar(usuario)" class="tooltip" >
 												<i class="fa fa-pencil fa-fw"></i>

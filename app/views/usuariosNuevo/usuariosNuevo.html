@@ -55,9 +55,19 @@
 							<div class="form-group">
 			                    <label class="col-sm-3 control-label">Genero</label>
 			                    <div class="col-sm-6">
-									<select class="form-control required" ng-model="usuario.id_genero">
+									<select class="form-control required" ng-model="usuario.id_genero" ng-disabled="flags.editar">
 										<option value="">Seleccionar Sexo...</option>
 										<option ng-repeat ="genero in generos" value="[[ genero.id ]]">[[ genero.vc_nombre ]]</option>
+									</select>
+			                    </div>
+			                </div>
+
+							<div class="form-group">
+			                    <label class="col-sm-3 control-label">Rol</label>
+			                    <div class="col-sm-6">
+									<select class="form-control required" ng-model="usuario.id_rol" ng-disabled="flags.editar">
+										<option value="">Seleccionar Sexo...</option>
+										<option ng-repeat ="rol in roles" value="[[ rol.id ]]">[[ rol.vc_nombre ]]</option>
 									</select>
 			                    </div>
 			                </div>

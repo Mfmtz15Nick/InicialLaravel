@@ -21,21 +21,20 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     $scope.siguienteUrl           = null;
     $scope.paginaActual           = 0;
     $scope.buscar                 = "";
-    $scope.minimoBusqueda         = 1;
+    $scope.minimoBusqueda         = 3;
     $scope.total                  = 0;
     $scope.totalMostrarPaginado   = 2;
-
     $scope.usuariosPaginados      = [];
-
     $scope.anteriorUrl            = null;
     $scope.siguienteUrl           = null;
     $scope.paginaActual           = 0;
-
     $scope.buscar                 = "";
     $scope.cargando               = false;
     $scope.minimoBusqueda         = 1;
     $scope.total                  = 0;
     $scope.totalMostrarPaginado   = 2;
+
+    $scope.SISTEMA                = 1;
 
 // Scope Funciones
 
@@ -94,28 +93,30 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     }
 
     $scope.buscarUsuarios = function(){
-    if( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ){
-      ModelService.custom('get', 'api/usuarios/'+$scope.buscar+'/buscar')
-        .success(function(res){
-            $scope.usuarios          = res.data;
-            $scope.usuariosPaginados = res.data;
-            $scope.total             = res.last_page;
-            $scope.anteriorUrl       = res.prev_page_url;
-            $scope.siguienteUrl      = res.next_page_url;
-            $scope.paginaActual      = res.current_page;
-        })
-        .error(function (error) {
-            if(error.texto){
-                $message.warning(error.texto);
-            } else {
-                $message.warning("No se pudieron obtener los usuarios.");
-            }
-        })
-        .finally(function(){
-        });
-    } else {
-        $scope.actualizar();
-    }
+      console.log("ENTRA A Buscar");
+
+      if( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ){
+        ModelService.custom('get', 'api/usuarios/'+$scope.buscar+'/buscar')
+          .success(function(res){
+              $scope.usuarios          = res.data;
+              $scope.usuariosPaginados = res.data;
+              $scope.total             = res.last_page;
+              $scope.anteriorUrl       = res.prev_page_url;
+              $scope.siguienteUrl      = res.next_page_url;
+              $scope.paginaActual      = res.current_page;
+          })
+          .error(function (error) {
+              if(error.texto){
+                  $message.warning(error.texto);
+              } else {
+                  $message.warning("No se pudieron obtener los usuarios.");
+              }
+          })
+          .finally(function(){
+          });
+      } else {
+          $scope.actualizar();
+      }
     }
 
     $scope.actualizar = function() {
@@ -132,15 +133,15 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
 
     $scope.eliminar = function( usuario ) {
         $message.confirm({
-            text    : '¿Estás seguro de eliminar el usuarios '+usuario.vc_nombre+' '+usuario.vc_apellido+'?',
+            text    : '¿Estás seguro de eliminar el usuarios '+usuario.detalle.vc_nombre+' '+usuario.detalle.vc_apellido+'?',
             callback : function( msg ){
                 $loading.show();
                 ModelService.delete( usuario.id )
-                    .success(function(){
+                    .success(function(res){
                         msg.close();
                         var posicion = $util.getPosition($scope.usuarios, 'id', usuario.id);
                         $scope.usuarios.splice( posicion, 1 );
-                        $message.success('El usuarios '+usuario.vc_nombre+' '+usuario.vc_apellido+', fue eliminado correctamente.');
+                        $message.success(res.texto);
                     })
                     .error(function (error) {
                         if(error.texto){

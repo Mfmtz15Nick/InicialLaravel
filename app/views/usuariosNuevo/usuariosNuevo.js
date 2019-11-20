@@ -14,11 +14,10 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
     function( $scope, $rootScope, $state, $stateParams, $location, $util, $message, $loading, $validate, ModelService ){
 
 // Scope Variables
-    $scope.usuario = { id_genero: "" };
-    $scope.generos = [];
-    $scope.flags  = {
-        editar: false
-    };
+    $scope.usuario  = { id_genero: "", vc_nombre: "" };
+    $scope.generos  = [];
+    $scope.roles    = [];
+    $scope.flags    = { editar: false };
 
 // Scope Functions
     $scope.regresar = function() {
@@ -42,10 +41,9 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
         $loading.show();
 
         if( !$scope.flags.editar ) {
-
             ModelService.add($scope.usuario)
-                .success(function () {
-                    $message.success('El usuario '+$scope.usuario.vc_nombre+', fue guardado correctamente.');
+                .success(function (res) {
+                    $message.success(res.texto);
                     $state.go('usuarios');
                 })
                 .error(function (error) {
@@ -59,10 +57,9 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
                     $loading.hide();
                 });
         } else {
-
             ModelService.update($scope.usuario)
-                .success(function () {
-                    $message.success('El usuario '+$scope.usuario.vc_nombre+', fue editado correctamente.');
+                .success(function (res) {
+                    $message.success(res.texto);
                     $loading.hide();
                     $state.go('usuarios');
                 })
@@ -90,16 +87,20 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
             .success(function(res){
 
                 $scope.generos  = angular.copy(res.generos);
+                $scope.roles    = angular.copy(res.roles);
 
                 // Verificar proceso Agregar o Editar
                 $util.stateParams(function(){
 
                     $scope.flags.editar = true;
 
+                    console.log($stateParams);
+
                     ModelService.edit( $stateParams.id )
                         .success(function(res){
                             $scope.usuario                = res;
                             $scope.usuario.id_genero      = String($scope.usuario.id_genero);
+                            $scope.usuario.id_rol         = String($scope.usuario.id_rol);
                             $scope.usuario.vc_password_re = angular.copy($scope.usuario.vc_password);
                         })
                         .error(function (error) {
