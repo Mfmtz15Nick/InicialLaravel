@@ -11,14 +11,14 @@
 
 	<div class="container-fluid">
 		<div class="row header">
-			<div class="col-sm-8 ccs-title">
+			<div class="col-sm-6 ccs-title">
 				<h2>Usuarios</h2>
 				<ul>
 					<li><span><a href="#/inicio">Inicio</a></span></li>
 					<li><span> / Usuarios</span></li>
 				</ul>
 			</div>
-			<div class="col-sm-4 ccs-buttons">
+			<div class="col-sm-6 ccs-buttons">
 				<button class="btn btn-info" ng-click="actualizar()">
 					<span ng-if="!cargando"><i class="fa fa-refresh fa-fw"></i> Actualizar</span>
 					<span ng-if="cargando"><i class="fa fa-refresh fa-fw"></i> Cargando...</span>
@@ -31,6 +31,16 @@
 				<div class="input-group">
 					<span class="input-group-addon"><i class="fa fa-search fa-fw"></i></span>
 					<input type="text" class="form-control" placeholder="Buscar usuarios..." ng-model="buscar" ng-change="buscarUsuarios()">
+				</div>
+			</div>
+
+			<div class="col-sm-6 search-default">
+				<div class="input-group">
+					<span class="input-group-addon"><i class="fa fa-star fa-fw"></i></span>
+					<select class="form-control" ng-model="buscarRol" ng-change="buscarPorRol()">
+						<option value="">Seleccionar Rol...</option>
+						<option ng-repeat ="rol in roles" value="[[ rol.id ]]">[[ rol.vc_nombre ]]</option>
+					</select>
 				</div>
 			</div>
 		</div>
@@ -54,12 +64,12 @@
 									<th width="61"></th>
 								</thead>
 								<tbody>
-									<tr ng-repeat="usuario in usuarios" ng-hide="usuario.id == SISTEMA">
+									<tr ng-repeat="usuario in usuarios">
 										<td><i class="ti-user"></i></td>
-										<td>[[ usuario.detalle.vc_nombre ]]</td>
-										<td>[[ usuario.detalle.vc_apellido ]]</td>
-										<td>[[ usuario.detalle.vc_email ]]</td>
-										<td>[[ usuario.rol.rol.vc_nombre ]]</td>
+										<td>[[ usuario.vc_nombre ]]</td>
+										<td>[[ usuario.vc_apellido ]]</td>
+										<td>[[ usuario.vc_email ]]</td>
+										<td>[[ usuario.vc_nombreRol ]]</td>
 										<td>
 											<a ng-click = "editar(usuario)" class="tooltip" >
 												<i class="fa fa-pencil fa-fw"></i>

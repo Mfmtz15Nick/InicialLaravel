@@ -25,7 +25,7 @@ class UsuariosController extends Controller
 	const ADMINISTRADOR 	= 2;
 	const ACTIVO 					= 1;
 	const INACTIVO 				= 0;
-	const DATOSXPAGINA 		= 2;
+	const DATOSXPAGINA 		= 1;
 	/**
      * Validate a new controller instance.
      *
@@ -62,7 +62,34 @@ class UsuariosController extends Controller
 			}
 
 			// Obtener usuarios del sistema
-			return Usuarios::Filtro()->with('rol.rol', 'detalle')->paginate(self::DATOSXPAGINA);
+			$usuarios = Usuarios::join('usuariosDetalles as UD', 'usuarios.id', '=', 'UD.id_usuario')
+						->join('usuariosRoles as UR', 'usuarios.id', '=', 'UR.id_usuario')
+						->join('roles as R', 'UR.id_rol', '=', 'R.id')
+						->where([
+								['usuarios.sn_activo',    self::ACTIVO],
+								['usuarios.sn_eliminado', self::INACTIVO],
+								['UD.sn_activo',      	 	self::ACTIVO],
+								['UD.sn_eliminado',   	 	self::INACTIVO],
+								['UR.sn_activo',      	 	self::ACTIVO],
+								['UR.sn_eliminado',   	 	self::INACTIVO],
+								['R.sn_activo',      	 		self::ACTIVO],
+								['R.sn_eliminado',   	 		self::INACTIVO],
+								['R.id',   	 							'!=', self::SISTEMA]
+						])
+						->whereNull('usuarios.dt_eliminado')
+						->whereNull('UD.dt_eliminado')
+						->whereNull('UR.dt_eliminado')
+						->whereNull('R.dt_eliminado')
+						->selectRaw('usuarios.id, UD.vc_nombre, UD.vc_apellido, UD.vc_email, R.vc_nombre as vc_nombreRol')
+						->paginate(self::DATOSXPAGINA);
+
+				$roles 		= Roles::Filtro()
+		 												->where('id', '!=', self::SISTEMA)
+		 												->selectRaw('id, vc_nombre')
+		 												->orderBy('vc_nombre')
+		 												->get();
+
+				return [ 'usuarios' => $usuarios, 'roles' => $roles ];
     }
 
 	/**
@@ -345,7 +372,7 @@ class UsuariosController extends Controller
 		 *
 		 * @return Response
 		 */
-			public function buscar($nombre)
+			public function buscarByNombreOrApellido($nombre)
 			{
 				// Verificación para el uso del Controllador
 				$body = (Object)Request::all();
@@ -355,7 +382,75 @@ class UsuariosController extends Controller
 				}
 
 				// Obtener usuarios del sistema
-				return Usuarios::Filtro()->with('rol.rol', 'detalle')->paginate(self::DATOSXPAGINA);
+				$usuarios = Usuarios::join('usuariosDetalles as UD', 'usuarios.id', '=', 'UD.id_usuario')
+							->join('usuariosRoles as UR', 'usuarios.id', '=', 'UR.id_usuario')
+							->join('roles as R', 'UR.id_rol', '=', 'R.id')
+              ->where([
+                  ['usuarios.sn_activo',    self::ACTIVO],
+                  ['usuarios.sn_eliminado', self::INACTIVO],
+                  ['UD.sn_activo',      	 	self::ACTIVO],
+                  ['UD.sn_eliminado',   	 	self::INACTIVO],
+									['UR.sn_activo',      	 	self::ACTIVO],
+                  ['UR.sn_eliminado',   	 	self::INACTIVO],
+									['R.sn_activo',      	 		self::ACTIVO],
+                  ['R.sn_eliminado',   	 		self::INACTIVO],
+									['R.id',   	 							'!= ', self::SISTEMA]
+              ])
+              ->where(function( $q ) use( $nombre ){
+                  $q->where('UD.vc_nombre', 'like', '%'.$nombre.'%');
+              })
+              ->orWhere(function( $q ) use( $nombre ){
+                  $q->where('UD.vc_apellido', 'like', '%'.$nombre.'%');
+              })
+							->orWhere(function( $q ) use( $nombre ){
+                  $q->where('UD.vc_email', 'like', '%'.$nombre.'%');
+              })
+              ->whereNull('usuarios.dt_eliminado')
+              ->whereNull('UD.dt_eliminado')
+							->whereNull('UR.dt_eliminado')
+							->whereNull('R.dt_eliminado')
+							->selectRaw('usuarios.id, UD.vc_nombre, UD.vc_apellido, UD.vc_email, R.vc_nombre as vc_nombreRol')
+              ->paginate(self::DATOSXPAGINA);
+
+				return ['usuarios' => $usuarios];
 			}
 
+	/**
+	 * Display a listing of the resource.
+	 *
+	 * @return Response
+	 */
+		public function buscarByIdRol($idRol)
+		{
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+			return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			// Obtener usuarios del sistema
+			$usuarios = Usuarios::join('usuariosDetalles as UD', 'usuarios.id', '=', 'UD.id_usuario')
+						->join('usuariosRoles as UR', 'usuarios.id', '=', 'UR.id_usuario')
+						->join('roles as R', 'UR.id_rol', '=', 'R.id')
+						->where([
+								['usuarios.sn_activo',    self::ACTIVO],
+								['usuarios.sn_eliminado', self::INACTIVO],
+								['UD.sn_activo',      	 	self::ACTIVO],
+								['UD.sn_eliminado',   	 	self::INACTIVO],
+								['UR.sn_activo',      	 	self::ACTIVO],
+								['UR.sn_eliminado',   	 	self::INACTIVO],
+								['R.sn_activo',      	 		self::ACTIVO],
+								['R.sn_eliminado',   	 		self::INACTIVO],
+								['R.id',   	 							$idRol],
+						])
+						->whereNull('usuarios.dt_eliminado')
+						->whereNull('UD.dt_eliminado')
+						->whereNull('UR.dt_eliminado')
+						->whereNull('R.dt_eliminado')
+						->selectRaw('usuarios.id, UD.vc_nombre, UD.vc_apellido, UD.vc_email, R.vc_nombre as vc_nombreRol')
+						->paginate(self::DATOSXPAGINA);
+
+			return [ 'usuarios' => $usuarios ];
+		}
 }

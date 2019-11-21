@@ -30,11 +30,12 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     $scope.paginaActual           = 0;
     $scope.buscar                 = "";
     $scope.cargando               = false;
-    $scope.minimoBusqueda         = 1;
+    $scope.minimoBusqueda         = 3;
     $scope.total                  = 0;
     $scope.totalMostrarPaginado   = 2;
-
     $scope.SISTEMA                = 1;
+    $scope.buscarRol              = '';
+    $scope.roles                  = [];
 
 // Scope Funciones
 
@@ -47,10 +48,10 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
         $loading.show();
         ModelService.custom('get', url )
             .success(function(res){
-                $scope.usuarios     = res.data;
-                $scope.anteriorUrl  = res.prev_page_url;
-                $scope.siguienteUrl = res.next_page_url;
-                $scope.paginaActual = res.current_page;
+                $scope.usuarios     = res.usuarios.data;
+                $scope.anteriorUrl  = res.usuarios.prev_page_url;
+                $scope.siguienteUrl = res.usuarios.next_page_url;
+                $scope.paginaActual = res.usuarios.current_page;
             })
             .error(function (error) {
                 if(error.texto){
@@ -70,13 +71,23 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     if ( numero[0][0] != $scope.paginaActual ) {
         $scope.cargando = true;
         $loading.show();
-          ModelService.custom('get', 'api/usuarios?page='+numero)
+
+        var urlConsulta = 'api/usuarios?page='+numero;
+
+        if ($scope.buscarRol) {
+           urlConsulta = 'api/usuarios/'+$scope.buscarRol+'/buscarPorRol?page='+numero;
+        }
+        else if( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ){
+          urlConsulta = 'api/usuarios/'+$scope.buscar+'/buscar?page='+numero;
+        }
+
+          ModelService.custom('get', urlConsulta)
             .success(function(res){
-                $scope.usuarios               = res.data;
-                $scope.usuariosPaginados      = res.data;
-                $scope.anteriorUrl            = res.prev_page_url;
-                $scope.siguienteUrl           = res.next_page_url;
-                $scope.paginaActual           = res.current_page;
+                $scope.usuarios               = res.usuarios.data;
+                $scope.usuariosPaginados      = res.usuarios.data;
+                $scope.anteriorUrl            = res.usuarios.prev_page_url;
+                $scope.siguienteUrl           = res.usuarios.next_page_url;
+                $scope.paginaActual           = res.usuarios.current_page;
             })
             .error(function (error) {
                 if(error.texto){
@@ -90,20 +101,50 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
                 $scope.cargando = false;
             });
     }
-    }
+    },
+
+    $scope.buscarPorRol = function() {
+        if ($scope.buscarRol) {
+          $scope.buscar   = '';
+          $scope.cargando = true;
+          $loading.show();
+          ModelService.custom('get', 'api/usuarios/'+$scope.buscarRol+'/buscarPorRol')
+                  .success(function(res){
+                      $scope.usuarios           = res.usuarios.data;
+                      $scope.usuariosPaginados  = res.usuarios.data;
+                      $scope.anteriorUrl        = res.usuarios.prev_page_url;
+                      $scope.siguienteUrl       = res.usuarios.next_page_url;
+                      $scope.paginaActual       = res.usuarios.current_page;
+                      $scope.total              = res.usuarios.last_page;
+                  })
+                  .error(function (error) {
+                      if(error.texto){
+                          $message.warning(error.texto);
+                      } else {
+                          $message.warning("No se pudieron obtener los usuarios.");
+                      }
+                  })
+                  .finally(function(){
+                      $scope.cargando = false;
+                      $loading.hide();
+                  });
+        }
+        else {
+          $scope.actualizar();
+        }
+    },
 
     $scope.buscarUsuarios = function(){
-      console.log("ENTRA A Buscar");
-
       if( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ){
+        $scope.buscarRol   = '';
         ModelService.custom('get', 'api/usuarios/'+$scope.buscar+'/buscar')
           .success(function(res){
-              $scope.usuarios          = res.data;
-              $scope.usuariosPaginados = res.data;
-              $scope.total             = res.last_page;
-              $scope.anteriorUrl       = res.prev_page_url;
-              $scope.siguienteUrl      = res.next_page_url;
-              $scope.paginaActual      = res.current_page;
+              $scope.usuarios           = res.usuarios.data;
+              $scope.usuariosPaginados  = res.usuarios.data;
+              $scope.total              = res.usuarios.last_page;
+              $scope.anteriorUrl        = res.usuarios.prev_page_url;
+              $scope.siguienteUrl       = res.usuarios.next_page_url;
+              $scope.paginaActual       = res.usuarios.current_page;
           })
           .error(function (error) {
               if(error.texto){
@@ -114,6 +155,7 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
           })
           .finally(function(){
           });
+
       } else {
           $scope.actualizar();
       }
@@ -165,12 +207,13 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
 
         ModelService.list()
             .success(function( res ){
-                $scope.usuarios           = res.data;
-                $scope.usuariosPaginados  = res.data;
-                $scope.total              = res.last_page;
-                $scope.anteriorUrl        = res.prev_page_url;
-                $scope.siguienteUrl       = res.next_page_url;
-                $scope.paginaActual       = res.current_page;
+                $scope.roles              = res.roles;
+                $scope.usuarios           = res.usuarios.data;
+                $scope.usuariosPaginados  = res.usuarios.data;
+                $scope.total              = res.usuarios.last_page;
+                $scope.anteriorUrl        = res.usuarios.prev_page_url;
+                $scope.siguienteUrl       = res.usuarios.next_page_url;
+                $scope.paginaActual       = res.usuarios.current_page;
             })
             .error(function () {
                 $message.warning("No se obtener los registros.");

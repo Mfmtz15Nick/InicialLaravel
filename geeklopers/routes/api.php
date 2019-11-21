@@ -22,4 +22,5 @@ use Illuminate\Http\Request;
 // MENU
 
 	Route::resource('usuarios', 'UsuariosController');
-	Route::get('usuarios/{nombre}/buscar', 'UsuariosController@buscar');
+	Route::get('usuarios/{nombre}/buscar', 'UsuariosController@buscarByNombreOrApellido');
+	Route::get('usuarios/{idRol}/buscarPorRol', 'UsuariosController@buscarByIdRol');
