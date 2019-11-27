@@ -25,7 +25,7 @@ class UsuariosController extends Controller
 	const ADMINISTRADOR 	= 2;
 	const ACTIVO 					= 1;
 	const INACTIVO 				= 0;
-	const DATOSXPAGINA 		= 1;
+	const DATOSXPAGINA 		= 10;
 	/**
      * Validate a new controller instance.
      *
@@ -131,67 +131,84 @@ class UsuariosController extends Controller
 			return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
 		}
 
-        // Validacion de parametros
-        $validator = Validator::make((array)$body, [
-            'id_genero'      		=> 'required',
-						'id_rol'      			=> 'required',
-            'vc_nombre'      		=> 'required',
-            'vc_apellido'    		=> 'required',
-            'vc_email'       		=> 'required',
-            'vc_password'    		=> 'required',
-            'vc_password_re'    => 'required'
-        ]);
+    // Validacion de parametros
+    $validator = Validator::make((array)$body, [
+        'id_genero'      		=> 'required',
+				'id_rol'      			=> 'required',
+        'vc_nombre'      		=> 'required',
+        'vc_apellido'    		=> 'required',
+        'vc_email'       		=> 'required',
+        'vc_password'    		=> 'required',
+        'vc_password_re'    => 'required'
+    ]);
 
-        if ($validator->fails()) {
-            return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
-        }
+    if ($validator->fails()) {
+        return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+    }
 
-        // Validar contraseñas
-        if ($body->vc_password != $body->vc_password_re) {
-            return Response::json(['texto' => 'Las contraseñas proporcionadas no son identicas.'], 418);
+    // Validar contraseñas
+    if ($body->vc_password != $body->vc_password_re) {
+        return Response::json(['texto' => 'Las contraseñas proporcionadas no son identicas.'], 418);
 		}
 
-        try
-        {
-            DB::beginTransaction();
+		$tmp_imagen 	= [];
+		$ext 					= [];
+		$folder     	= 'images/usuarios/';
 
-            // Verifica si existe en la BD
-            if( UsuariosDetalles::Filtro()->EsEmail($body->vc_email)->exists() ){
-              throw new Exception('El correo '. $body->vc_email .', ya se encuentra registrado.', 418);
-            }
-						else {
-	        		// Crear Usuario
-							$usuario = Usuarios::create([
-								'id_creador' 	=> $body->usuario->id
-							]);
+    try
+    {
+        DB::beginTransaction();
 
-							// Crear Usuario Roles
-            	UsuariosRoles::create([
-            		'id_usuario' 	=> $usuario->id,
-            		'id_rol'	 		=> $body->id_rol,
-            		'id_creador' 	=> $body->usuario->id
-            	]);
-
-            	// Crear Usuario Detalles
-            	UsuariosDetalles::create([
-            		'id_usuario' 	=> $usuario->id,
-            		'id_genero' 	=> $body->id_genero,
-            		'vc_nombre' 	=> $body->vc_nombre,
-            		'vc_apellido' => $body->vc_apellido,
-            		'vc_email' 		=> $body->vc_email,
-            		'vc_password' => $body->vc_password,
-            		'id_creador' 	=> $body->usuario->id
-            	]);
-            }
-
-            DB::commit();
-            return ['texto' => 'El usuario '. $body->vc_nombre .' '.$body->vc_apellido.', fue guardado correctamente.'];
+        // Verifica si existe en la BD
+        if( UsuariosDetalles::Filtro()->EsEmail($body->vc_email)->exists() ){
+          throw new Exception('El correo '. $body->vc_email .', ya se encuentra registrado.', 418);
         }
-        catch (Exception $e)
-        {
-            DB::rollBack();
-            return Response::json(['texto' => $e->getMessage()], 418);
+				else {
+      		// Crear Usuario
+					$usuario = Usuarios::create([
+						'id_creador' 	=> $body->usuario->id
+					]);
+
+					// Crear Usuario Roles
+        	UsuariosRoles::create([
+        		'id_usuario' 	=> $usuario->id,
+        		'id_rol'	 		=> $body->id_rol,
+        		'id_creador' 	=> $body->usuario->id
+        	]);
+
+        	// Crear Usuario Detalles
+        	$usuarioDetalle = UsuariosDetalles::create([
+        		'id_usuario' 	=> $usuario->id,
+        		'id_genero' 	=> $body->id_genero,
+        		'vc_nombre' 	=> $body->vc_nombre,
+        		'vc_apellido' => $body->vc_apellido,
+        		'vc_email' 		=> $body->vc_email,
+        		'vc_password' => $body->vc_password,
+        		'id_creador' 	=> $body->usuario->id
+        	]);
+					// --------------- GUARDAR LA IMAGEN ---------------
+					// Primera Imagen
+					$tmp_imagen = public_path( $folder . $body->vc_imagen);
+					$ext = pathinfo( $tmp_imagen, PATHINFO_EXTENSION);
+					$vc_imagen = 'Imagen_U_'. $usuario->id .'_'. Carbon::now()->timestamp .'.'. $ext;
+
+					copy( $tmp_imagen, public_path( $folder . $vc_imagen ) );
+					unlink($tmp_imagen);
+
+					$usuarioDetalle->vc_imagen 			= $vc_imagen;
+					$usuarioDetalle->vc_imagenUrl 	= $folder . $vc_imagen;
+					$usuarioDetalle->save();
+					// -------------------------------------------------
         }
+
+        DB::commit();
+        return ['texto' => 'El usuario '. $body->vc_nombre .' '.$body->vc_apellido.', fue guardado correctamente.'];
+    }
+    catch (Exception $e)
+    {
+        DB::rollBack();
+        return Response::json(['texto' => $e->getMessage()], 418);
+    }
 	}
 
 	/**
@@ -232,7 +249,9 @@ class UsuariosController extends Controller
 			'id_genero' 	=> $usuario->detalle->id_genero,
 			'id_rol' 			=> $usuario->rol->id_rol,
 			'vc_email' 		=> $usuario->detalle->vc_email,
-			'vc_password' => $usuario->detalle->vc_password
+			'vc_password' => $usuario->detalle->vc_password,
+			'vc_imagen' 	=> $usuario->detalle->vc_imagen,
+			'vc_imagenUrl' => $usuario->detalle->vc_imagenUrl
 		];
 
 		return $usuario;
@@ -252,61 +271,90 @@ class UsuariosController extends Controller
 			return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
 		}
 
-        // Validacion de parametros
-        $validator = Validator::make((array)$body, [
-            'id_genero'      		=> 'required',
-						'id_rol'      			=> 'required',
-            'vc_nombre'      		=> 'required',
-            'vc_apellido'    		=> 'required',
-            'vc_email'       		=> 'required',
-            'vc_password'    		=> 'required',
-            'vc_password_re'    => 'required'
-        ]);
+    // Validacion de parametros
+    $validator = Validator::make((array)$body, [
+        'id_genero'      		=> 'required',
+				'id_rol'      			=> 'required',
+        'vc_nombre'      		=> 'required',
+        'vc_apellido'    		=> 'required',
+        'vc_email'       		=> 'required',
+        'vc_password'    		=> 'required',
+        'vc_password_re'    => 'required'
+    ]);
 
-        if ($validator->fails()) {
-            return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+    if ($validator->fails()) {
+        return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+    }
+
+    // Validar contraseñas
+    if ($body->vc_password != $body->vc_password_re) {
+        return Response::json(['texto' => 'Las contraseñas proporcionadas no son identicas.'], 418);
+    }
+
+		$tmp_imagen 	= [];
+		$ext 					= [];
+		$folder     	= 'images/usuarios/';
+
+    try
+    {
+        DB::beginTransaction();
+
+        //Verifica si existe el correo en la BD
+        if( UsuariosDetalles::Filtro()->EsEmail($body->vc_email)->where('id_usuario', '!=', $id)->exists() ){
+            throw new Exception('El correo '. $body->vc_email .', ya se encuentra registrado.', 418);
+        } else {
+						// Obtener el detalle del Usuario
+				    $usuarioDetalleEliminar = UsuariosDetalles::Filtro()->where('id_usuario', $id)->first();
+				    $usuarioDetalleEliminar->sn_activo 		= self::INACTIVO;
+				    $usuarioDetalleEliminar->sn_eliminado = self::ACTIVO;
+				    $usuarioDetalleEliminar->save();
+			      $usuarioDetalleEliminar->delete();
+
+          	// Crear nuevo detalle del Usuario
+          	$usuarioDetalle = UsuariosDetalles::create([
+          		'id_usuario' 			=> $id,
+          		'id_genero' 			=> $body->id_genero,
+          		'vc_nombre' 			=> $body->vc_nombre,
+          		'vc_apellido' 		=> $body->vc_apellido,
+          		'vc_email' 				=> $body->vc_email,
+          		'vc_password' 		=> $body->vc_password,
+          		'id_creador'			=> $body->usuario->id
+						]);
+
+						if ($body->vc_imagen != $usuarioDetalleEliminar->vc_imagen ) {
+							// --------------- GUARDAR LA IMAGEN ---------------
+							// Primera Imagen
+							$tmp_imagen = public_path( $folder . $body->vc_imagen);
+							$ext = pathinfo( $tmp_imagen, PATHINFO_EXTENSION);
+							$vc_imagen = 'Imagen_U_'. $id .'_'. Carbon::now()->timestamp .'.'. $ext;
+
+							copy( $tmp_imagen, public_path( $folder . $vc_imagen ) );
+							unlink($tmp_imagen);
+
+							$usuarioDetalle->vc_imagen 			= $vc_imagen;
+							$usuarioDetalle->vc_imagenUrl 	= $folder . $vc_imagen;
+							// Eliminamos la imagen anterior
+							if ($usuarioDetalleEliminar->vc_imagen) {
+								$imagen_anterior = public_path( $folder . $usuarioDetalleEliminar->vc_imagen);
+								unlink($imagen_anterior);
+							}
+							// -------------------------------------------------
+						}
+						else {
+							$usuarioDetalle->vc_imagen 			= $usuarioDetalleEliminar->vc_imagen;
+							$usuarioDetalle->vc_imagenUrl 	= $usuarioDetalleEliminar->vc_imagenUrl;
+						}
+						$usuarioDetalle->save();
         }
 
-        // Validar contraseñas
-        if ($body->vc_password != $body->vc_password_re) {
-            return Response::json(['texto' => 'Las contraseñas proporcionadas no son identicas.'], 418);
-        }
-
-        try
-        {
-            DB::beginTransaction();
-
-            //Verifica si existe el correo en la BD
-            if( UsuariosDetalles::Filtro()->EsEmail($body->vc_email)->where('id_usuario', '!=', $id)->exists() ){
-                throw new Exception('El correo '. $body->vc_email .', ya se encuentra registrado.', 418);
-            } else {
-								// Obtener el detalle del Usuario
-						    $usuarioDetalle = UsuariosDetalles::Filtro()->where('id_usuario', $id)->first();
-						    $usuarioDetalle->sn_activo 		= self::INACTIVO;
-						    $usuarioDetalle->sn_eliminado = self::ACTIVO;
-						    $usuarioDetalle->save();
-					      $usuarioDetalle->delete();
-
-	            	// Crear nuevo detalle del Usuario
-	            	UsuariosDetalles::create([
-	            		'id_usuario' 			=> $id,
-	            		'id_genero' 			=> $body->id_genero,
-	            		'vc_nombre' 			=> $body->vc_nombre,
-	            		'vc_apellido' 		=> $body->vc_apellido,
-	            		'vc_email' 				=> $body->vc_email,
-	            		'vc_password' 		=> $body->vc_password,
-	            		'id_creador'			=> $body->usuario->id
-								]);
-            }
-
-            DB::commit();
-            return ['texto' => 'El usuario '. $body->vc_nombre .' '.$body->vc_apellido.', fue actualizado correctamente.'];
-        }
-        catch (Exception $e)
-        {
-            DB::rollBack();
-            return Response::json(['texto' => $e->getMessage()],418);
-        }
+        DB::commit();
+        return ['texto' => 'El usuario '. $body->vc_nombre .' '.$body->vc_apellido.', fue actualizado correctamente.'];
+    }
+    catch (Exception $e)
+    {
+        DB::rollBack();
+        return Response::json(['texto' => $e->getMessage()],418);
+    }
 	}
 
 	/**
@@ -322,6 +370,9 @@ class UsuariosController extends Controller
 			if (!$this->validateController($body->usuario)) {
 				return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
 			}
+
+			$usuario_imagen = '';
+			$folder     		= 'images/usuarios/';
 
 			try
 			{
@@ -357,6 +408,12 @@ class UsuariosController extends Controller
 					$usuarioToken->delete();
 				}
 
+				// Se elimina la imagen
+				if ($usuarioDetalle->vc_imagen) {
+					$eliminarImagen = public_path( $folder . $usuarioDetalle->vc_imagen);
+					unlink($eliminarImagen);
+				}
+
 				DB::commit();
 				return ['texto' => 'El usuario '.$usuarioDetalle->vc_nombre.' '.$usuarioDetalle->vc_apellido.', fue eliminado correctamente.'];
 			}
@@ -372,8 +429,14 @@ class UsuariosController extends Controller
 		 *
 		 * @return Response
 		 */
-			public function buscarByNombreOrApellido($nombre)
+			public function buscarByNombreOrApellidoOrIdRol($nombre, $idRol = null)
 			{
+
+				Log::info([
+					'$nombre' => $nombre,
+					'$idRol' 	=> $idRol
+				]);
+
 				// Verificación para el uso del Controllador
 				$body = (Object)Request::all();
 
@@ -396,21 +459,38 @@ class UsuariosController extends Controller
                   ['R.sn_eliminado',   	 		self::INACTIVO],
 									['R.id',   	 							'!= ', self::SISTEMA]
               ])
-              ->where(function( $q ) use( $nombre ){
-                  $q->where('UD.vc_nombre', 'like', '%'.$nombre.'%');
-              })
-              ->orWhere(function( $q ) use( $nombre ){
-                  $q->where('UD.vc_apellido', 'like', '%'.$nombre.'%');
-              })
-							->orWhere(function( $q ) use( $nombre ){
-                  $q->where('UD.vc_email', 'like', '%'.$nombre.'%');
-              })
               ->whereNull('usuarios.dt_eliminado')
               ->whereNull('UD.dt_eliminado')
 							->whereNull('UR.dt_eliminado')
 							->whereNull('R.dt_eliminado')
-							->selectRaw('usuarios.id, UD.vc_nombre, UD.vc_apellido, UD.vc_email, R.vc_nombre as vc_nombreRol')
-              ->paginate(self::DATOSXPAGINA);
+							->selectRaw('usuarios.id, UD.vc_nombre, UD.vc_apellido, UD.vc_email, R.vc_nombre as vc_nombreRol');
+
+				if ( $idRol ) {
+					$usuarios
+						->where(function( $q ) use( $nombre, $idRol ){
+								$q->where('UD.vc_nombre', 'like', '%'.$nombre.'%')->where('R.id' , $idRol);
+						})
+						->orWhere(function( $q ) use( $nombre, $idRol ){
+								$q->where('UD.vc_apellido', 'like', '%'.$nombre.'%')->where('R.id' , $idRol);
+						})
+						->orWhere(function( $q ) use( $nombre, $idRol ){
+								$q->where('UD.vc_email', 'like', '%'.$nombre.'%')->where('R.id' , $idRol);
+						});
+				}
+				else{
+					$usuarios
+						->where(function( $q ) use( $nombre ){
+								$q->where('UD.vc_nombre', 'like', '%'.$nombre.'%');
+						})
+						->orWhere(function( $q ) use( $nombre ){
+								$q->where('UD.vc_apellido', 'like', '%'.$nombre.'%');
+						})
+						->orWhere(function( $q ) use( $nombre ){
+								$q->where('UD.vc_email', 'like', '%'.$nombre.'%');
+						});
+				}
+
+        $usuarios = $usuarios->paginate(self::DATOSXPAGINA);
 
 				return ['usuarios' => $usuarios];
 			}
@@ -452,5 +532,46 @@ class UsuariosController extends Controller
 						->paginate(self::DATOSXPAGINA);
 
 			return [ 'usuarios' => $usuarios ];
+		}
+
+		public function upload()
+		{
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+			if (!$this->validateController($body->usuario)) {
+				return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			try {
+					$file = Request::file('file');
+					$vc_imagen = Carbon::now()->timestamp .'_'. $file->getClientOriginalName();
+					$file->move( public_path('images/usuarios'), $vc_imagen);
+
+					return [ 'estatus'   => true, 'nombre' => $vc_imagen, 'url' => 'images/usuarios/' ];
+			}
+			catch (Exception $e) {
+				return Response::json(['estatus'=> false, 'message' => $e->getMessage() ],418);
+			}
+		}
+
+		public function eliminarImagen($vcImagen){
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+			if (!$this->validateController($body->usuario)) {
+				return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			$usuario_imagen = '';
+			$folder     		= 'images/usuarios/';
+
+			try {
+					$usuario_imagen = public_path( $folder . $vcImagen);
+					unlink($usuario_imagen);
+
+					return [ 'texto'  => 'Se ha eliminado la imagen correctamente.' ];
+			}
+			catch (Exception $e) {
+				return Response::json([ 'texto' => $e->getMessage() ],418);
+			}
 		}
 }

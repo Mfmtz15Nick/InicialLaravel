@@ -22,5 +22,8 @@ use Illuminate\Http\Request;
 // MENU
 
 	Route::resource('usuarios', 'UsuariosController');
-	Route::get('usuarios/{nombre}/buscar', 'UsuariosController@buscarByNombreOrApellido');
+	Route::get('usuarios/{nombre}/buscar', 'UsuariosController@buscarByNombreOrApellidoOrIdRol');
+	Route::get('usuarios/{nombre}/{idRol}/buscar', 'UsuariosController@buscarByNombreOrApellidoOrIdRol');
 	Route::get('usuarios/{idRol}/buscarPorRol', 'UsuariosController@buscarByIdRol');
+	Route::post('usuarios/upload', 'UsuariosController@upload');
+	Route::delete('usuarios/eliminarImagen/{vcImagen}', 'UsuariosController@eliminarImagen');

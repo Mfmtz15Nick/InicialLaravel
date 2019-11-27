@@ -8,7 +8,7 @@ class UsuariosDetalles extends BaseModel
 {
 	// Datos Generales
 	protected $table = 'usuariosDetalles';
-	protected $fillable = ['id_usuario', 'id_genero', 'vc_nombre', 'vc_apellido', 'dt_nacimiento', 'nu_telefono', 'vc_email', 'vc_password', 'dt_nacimiento','id_creador'];
+	protected $fillable = ['id_usuario', 'id_genero', 'vc_nombre', 'vc_apellido', 'dt_nacimiento', 'nu_telefono', 'vc_email', 'vc_password', 'dt_nacimiento', 'vc_imagen', 'vc_imagenUrl', 'id_creador'];
 
     // Relacion - Usuarios
     public function usuario()

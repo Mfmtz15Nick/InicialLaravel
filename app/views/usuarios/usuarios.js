@@ -37,6 +37,8 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     $scope.buscarRol              = '';
     $scope.roles                  = [];
 
+    var urlConsulta;
+
 // Scope Funciones
 
     $scope.paginador = function(numero) {
@@ -72,13 +74,16 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
         $scope.cargando = true;
         $loading.show();
 
-        var urlConsulta = 'api/usuarios?page='+numero;
+        urlConsulta = 'api/usuarios?page='+numero;
 
-        if ($scope.buscarRol) {
-           urlConsulta = 'api/usuarios/'+$scope.buscarRol+'/buscarPorRol?page='+numero;
+        if( ( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ) && $scope.buscarRol  ){
+          urlConsulta = 'api/usuarios/'+$scope.buscar+'/'+$scope.buscarRol+'/buscar?page='+numero;
         }
         else if( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ){
           urlConsulta = 'api/usuarios/'+$scope.buscar+'/buscar?page='+numero;
+        }
+        else if ($scope.buscarRol) {
+          urlConsulta = 'api/usuarios/'+$scope.buscarRol+'/buscarPorRol?page='+numero;
         }
 
           ModelService.custom('get', urlConsulta)
@@ -100,44 +105,24 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
                 $loading.hide();
                 $scope.cargando = false;
             });
-    }
-    },
-
-    $scope.buscarPorRol = function() {
-        if ($scope.buscarRol) {
-          $scope.buscar   = '';
-          $scope.cargando = true;
-          $loading.show();
-          ModelService.custom('get', 'api/usuarios/'+$scope.buscarRol+'/buscarPorRol')
-                  .success(function(res){
-                      $scope.usuarios           = res.usuarios.data;
-                      $scope.usuariosPaginados  = res.usuarios.data;
-                      $scope.anteriorUrl        = res.usuarios.prev_page_url;
-                      $scope.siguienteUrl       = res.usuarios.next_page_url;
-                      $scope.paginaActual       = res.usuarios.current_page;
-                      $scope.total              = res.usuarios.last_page;
-                  })
-                  .error(function (error) {
-                      if(error.texto){
-                          $message.warning(error.texto);
-                      } else {
-                          $message.warning("No se pudieron obtener los usuarios.");
-                      }
-                  })
-                  .finally(function(){
-                      $scope.cargando = false;
-                      $loading.hide();
-                  });
-        }
-        else {
-          $scope.actualizar();
-        }
-    },
+      }
+    };
 
     $scope.buscarUsuarios = function(){
-      if( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ){
-        $scope.buscarRol   = '';
-        ModelService.custom('get', 'api/usuarios/'+$scope.buscar+'/buscar')
+      if( ( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ) || $scope.buscarRol ){
+
+        if( ( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ) && $scope.buscarRol  ){
+          urlConsulta = 'api/usuarios/'+$scope.buscar+'/'+$scope.buscarRol+'/buscar';
+        }
+        else if( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ){
+          urlConsulta = 'api/usuarios/'+$scope.buscar+'/buscar';
+        }
+        else if ($scope.buscarRol) {
+          $loading.show();
+          urlConsulta = 'api/usuarios/'+$scope.buscarRol+'/buscarPorRol';
+        }
+
+        ModelService.custom('get', urlConsulta)
           .success(function(res){
               $scope.usuarios           = res.usuarios.data;
               $scope.usuariosPaginados  = res.usuarios.data;
@@ -154,9 +139,10 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
               }
           })
           .finally(function(){
+            $loading.hide();
           });
-
-      } else {
+      }
+      else {
           $scope.actualizar();
       }
     }
@@ -175,7 +161,7 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
 
     $scope.eliminar = function( usuario ) {
         $message.confirm({
-            text    : '¿Estás seguro de eliminar el usuarios '+usuario.detalle.vc_nombre+' '+usuario.detalle.vc_apellido+'?',
+            text    : '¿Estás seguro de eliminar el usuarios '+usuario.vc_nombre+' '+usuario.vc_apellido+'?',
             callback : function( msg ){
                 $loading.show();
                 ModelService.delete( usuario.id )
@@ -203,7 +189,9 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
 
         ModelService.addModel('usuarios');
 
-        $scope.cargando = true;
+        $scope.cargando   = true;
+        $scope.buscarRol  = '';
+        $scope.buscar     = "";
 
         ModelService.list()
             .success(function( res ){

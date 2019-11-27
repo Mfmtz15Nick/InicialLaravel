@@ -37,7 +37,7 @@
 			<div class="col-sm-6 search-default">
 				<div class="input-group">
 					<span class="input-group-addon"><i class="fa fa-star fa-fw"></i></span>
-					<select class="form-control" ng-model="buscarRol" ng-change="buscarPorRol()">
+					<select class="form-control" ng-model="buscarRol" ng-change="buscarUsuarios()">
 						<option value="">Seleccionar Rol...</option>
 						<option ng-repeat ="rol in roles" value="[[ rol.id ]]">[[ rol.vc_nombre ]]</option>
 					</select>

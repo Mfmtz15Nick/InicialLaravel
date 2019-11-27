@@ -96,6 +96,9 @@ SET FOREIGN_KEY_CHECKS=0;
     vc_email VARCHAR(50) NOT NULL,
     vc_password VARCHAR(50) NOT NULL,
 
+    vc_imagen VARCHAR(100) NOT NULL,
+    vc_imagenUrl TEXT NOT NULL,
+
     sn_activo TINYINT NOT NULL DEFAULT 1,
     sn_eliminado TINYINT NOT NULL DEFAULT 0,
     dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -140,6 +143,29 @@ SET FOREIGN_KEY_CHECKS=0;
     PRIMARY KEY( id ),
     CONSTRAINT FK_Usuarios FOREIGN KEY( id_usuario ) REFERENCES usuarios ( id ),
     CONSTRAINT FK_Roles FOREIGN KEY( id_rol ) REFERENCES roles ( id )
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+
+  /* Tabla de usuariosImagenes */
+  DROP TABLE IF EXISTS usuariosImagenes;
+  CREATE TABLE usuariosImagenes(
+    id INT NOT NULL AUTO_INCREMENT,
+    id_usuario INT UNSIGNED NOT NULL,
+
+    vc_imagen VARCHAR(100) NOT NULL,
+    vc_imagenUrl TEXT NOT NULL,
+    nu_posicion SMALLINT(6) NOT NULL,
+
+    sn_activo TINYINT NOT NULL DEFAULT 1,
+    sn_eliminado TINYINT NOT NULL DEFAULT 0,
+    dt_registro TIMESTAMP NOT NULL,
+    dt_editado TIMESTAMP NOT NULL,
+    dt_eliminado TIMESTAMP NULL,
+    id_creador INT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY( id_usuario ) REFERENCES usuarios ( id ),
+    FOREIGN KEY( id_creador ) REFERENCES usuarios ( id )
   )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 /* --------------------- CATALOGOS --------------------- */

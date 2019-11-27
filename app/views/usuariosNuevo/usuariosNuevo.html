@@ -79,25 +79,104 @@
 			                    </div>
 			                </div>
 							<div class="form-group">
-			                    <label class="col-sm-3 control-label">Contraseña</label>
-			                    <div class="col-sm-6">
-			                        <input type="password" class="form-control required" ng-model="usuario.vc_password" placeholder="">
-			                    </div>
-			                </div>
+                  <label class="col-sm-3 control-label">Contraseña</label>
+                  <div class="col-sm-6">
+                      <input type="password" class="form-control required" ng-model="usuario.vc_password" placeholder="">
+                  </div>
+              </div>
 							<div class="form-group">
-			                    <label class="col-sm-3 control-label">Confirmar contraseña</label>
-			                    <div class="col-sm-6">
-			                        <input type="password" class="form-control required" ng-model="usuario.vc_password_re" placeholder="">
-			                    </div>
-			                </div>
-			                <div class="form-group">
-			                	<div class="content-box text-center">
-			                    	<button class="btn btn-success">
-										<i class="fa fa-hdd-o fa-fw"></i> <span ng-if="!flags.editar">Guardar</span><span ng-if="flags.editar">Actualizar</span>
-			                    	</button>
-			                	</div>
-			                </div>
-			            </form>
+                    <label class="col-sm-3 control-label">Confirmar contraseña</label>
+                    <div class="col-sm-6">
+                        <input type="password" class="form-control required" ng-model="usuario.vc_password_re" placeholder="">
+                    </div>
+                </div>
+
+								<div class="row form-group">
+									<!-- IMAGENES A SUBIR -->
+									<label class="col-sm-3 control-label">Imágen</label>
+									<div class="col-sm-6 img-previo">
+										<div class="row">
+											<input type="file" nv-file-select="" uploader="uploader" class="form-control"/>
+											<div class="col-sm-6 text-center" style="margin-bottom: 15px;">
+												<div style="height: 200px; width: 100%; background-color: #f5f5f5;" ng-show="usuario.vc_imagen != ''" >
+													<img ng-src="[[usuario.vc_imagenUrl]]" alt="" style="max-width: 100%; max-height: 200px;"/>
+												</div>
+												</div>
+										</div>
+									</div>
+								</div>
+								<div class="row form-group">
+									<div class="col-sm-9">
+										<div class="images">
+											<div class="table-responsive" style="margin-top: 15px">
+												<table class="table" ng-show="uploader.queue[0].file">
+													<thead>
+														<tr>
+															<th width="100">Imágen</th>
+															<th>Tamaño</th>
+															<th>Progreso</th>
+															<th width="100">Estatus</th>
+															<th>Acciones</th>
+														</tr>
+													</thead>
+												<tbody>
+													<tr ng-repeat="item in uploader.queue">
+														<td>
+															<strong>[[ item.file.name ]]</strong>
+															<div ng-show="uploader.isHTML5" ng-thumb="{ file: item._file, height: 100 }"></div>
+														</td>
+														<td ng-show="uploader.isHTML5" nowrap>[[ item.file.size/1024/1024|number:2 ]] MB</td>
+														<td ng-show="uploader.isHTML5">
+															<div class="progress" style="margin-bottom: 0;">
+															<div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+															</div>
+														</td>
+														<td class="text-center">
+															<span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+															<span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+															<span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+														</td>
+														<td nowrap>
+															<button type="button" class="btn btn-danger btn-xs" ng-click="deleteItem(item);">
+															<span class="glyphicon glyphicon-trash"></span>
+															</button>
+														</td>
+													</tr>
+												</tbody>
+												</table>
+												<table class="table" ng-if=" uploader.queue.length == 0 && flags.editar && usuario.vc_imagenUrl != '' ">
+													<thead>
+														<tr>
+															<th>Imágen</th>
+															<th width="100">Acciones</th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td>
+																<strong>[[ usuario.vc_imagen ]]</strong>
+															</td>
+															<td nowrap>
+																<button type="button" class="btn btn-danger btn-xs" ng-click="eliminar();">
+																<span class="glyphicon glyphicon-trash"></span>
+															</button>
+															</td>
+														</tr>
+													</tbody>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+
+	                <div class="form-group">
+	                	<div class="content-box text-center">
+	                    	<button class="btn btn-success">
+														<i class="fa fa-hdd-o fa-fw"></i> <span ng-if="!flags.editar">Guardar</span><span ng-if="flags.editar">Actualizar</span>
+	                    	</button>
+	                	</div>
+	                </div>
+	            </form>
 					</div>
 				</div>
 			</div>

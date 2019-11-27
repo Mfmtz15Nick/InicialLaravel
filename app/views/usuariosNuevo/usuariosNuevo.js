@@ -7,19 +7,68 @@
 |
 */
 
-var app = angular.module('usuariosNuevo', []);
+var app = angular.module('usuariosNuevo', ['angularFileUpload','as.sortable']);
 
 // Controller
-app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', '$util', '$message', '$loading', '$validate', 'ModelService',
-    function( $scope, $rootScope, $state, $stateParams, $location, $util, $message, $loading, $validate, ModelService ){
+app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', '$util', '$message', '$loading', '$validate', 'ModelService', '$uploader', '$http',
+    function( $scope, $rootScope, $state, $stateParams, $location, $util, $message, $loading, $validate, ModelService, $uploader, $http ){
 
 // Scope Variables
-    $scope.usuario  = { id_genero: "", vc_nombre: "" };
+    $scope.usuario  = { id_genero: "", vc_nombre: "", vc_imagen: "", vc_imagenUrl:"" };
     $scope.generos  = [];
     $scope.roles    = [];
     $scope.flags    = { editar: false };
 
 // Scope Functions
+    var uploader    = $uploader.load({
+        url : 'api/usuarios/upload',
+        autoUpload: true,
+        headers: {
+            Authorization: localStorage.getItem('gc.token')
+        }
+    });
+
+    $scope.uploader = uploader;
+
+    uploader.onCompleteItem = function(item, response, status, headers){
+
+        $scope.usuario.vc_imagen    = response.nombre;
+        $scope.usuario.vc_imagenUrl = response.url + response.nombre;
+
+        if( uploader.queue.length > 1 ){
+          for (var i = 0; i < uploader.queue.length; i++) {
+            if ( i == 0 ) {
+              uploader.queue[i].remove();
+            }
+          }
+        }
+    };
+
+    $scope.deleteItem = function(item){
+      ModelService.custom('delete', 'api/usuarios/eliminarImagen/' + $scope.usuario.vc_imagen )
+        .success( function(res){
+          $scope.usuario.vc_imagen    = '';
+          $scope.usuario.vc_imagenUrl = '';
+          item.remove();
+          $message.success(res.texto);
+        })
+        .error(function (error) {
+            if(error.texto){
+                $message.warning(error.texto);
+            } else {
+                $message.warning('La imagen no se pudo eliminar correctamente.');
+            }
+        })
+        .finally(function(){
+            $loading.hide();
+        });
+    };
+
+    $scope.eliminar = function() {
+        $scope.usuario.vc_imagen    = '';
+        $scope.usuario.vc_imagenUrl = '';
+    };
+
     $scope.regresar = function() {
         $state.go('usuarios');
     };
@@ -32,6 +81,11 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
 
         if( !$validate.form('form-validate') )
             return;
+
+        if( $scope.usuario.vc_imagenUrl == '' ){
+          $message.warning('No se ha cargado ninguna imagen.');
+          return;
+        }
 
         if ( $scope.usuario.vc_password != $scope.usuario.vc_password_re ) {
             $message.warning('Las constraseñas proporcionadas no son identicas.');
