@@ -169,3 +169,43 @@ SET FOREIGN_KEY_CHECKS=0;
   )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 /* --------------------- CATALOGOS --------------------- */
+
+/* Tabla de agendas */
+DROP TABLE IF EXISTS agendas;
+CREATE TABLE agendas(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+
+  vc_nombre VARCHAR(50) NOT NULL,
+
+  sn_activo TINYINT NOT NULL DEFAULT 1,
+  sn_eliminado TINYINT NOT NULL DEFAULT 0,
+  dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  dt_eliminado TIMESTAMP NULL,
+  id_creador INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY( id ),
+  FOREIGN KEY( id_creador ) REFERENCES usuarios ( id )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+/* Tabla de agendasHorarios */
+DROP TABLE IF EXISTS agendasHorarios;
+CREATE TABLE agendasHorarios(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  id_agenda INT UNSIGNED NOT NULL,
+
+  nu_dia SMALLINT(7) NOT NULL,
+  tm_entrada TIME NULL,
+  tm_salida TIME NULL,
+
+  sn_activo TINYINT NOT NULL DEFAULT 1,
+  sn_eliminado TINYINT NOT NULL DEFAULT 0,
+  dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  dt_eliminado TIMESTAMP NULL,
+  id_creador INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY( id ),
+  FOREIGN KEY( id_creador ) REFERENCES usuarios ( id ),
+  FOREIGN KEY( id_agenda ) REFERENCES agendas ( id )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;

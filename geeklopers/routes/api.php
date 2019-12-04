@@ -27,3 +27,6 @@ use Illuminate\Http\Request;
 	Route::get('usuarios/{idRol}/buscarPorRol', 'UsuariosController@buscarByIdRol');
 	Route::post('usuarios/upload', 'UsuariosController@upload');
 	Route::delete('usuarios/eliminarImagen/{vcImagen}', 'UsuariosController@eliminarImagen');
+
+	Route::resource('agendas', 'AgendasController');
+	Route::get('agendas/{nombre}/buscar', 'AgendasController@buscarByNombre');

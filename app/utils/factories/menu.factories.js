@@ -25,12 +25,18 @@
                             { state: 'usuarios', url: 'usuarios', file: 'usuarios', ext: 'html' },
                             { state: 'usuariosNuevo', url: 'usuarios/nuevo', file: 'usuariosNuevo', ext: 'html' },
                             { state: 'usuariosEditar', url: 'usuarios/:id/editar', file: 'usuariosNuevo', ext: 'html' },
+
+                        // AGENDAS
+                            { state: 'agendas', url: 'agendas', file: 'agendas', ext: 'html' },
+                            { state: 'agendasNuevo', url: 'agendas/nuevo', file: 'agendasNuevo', ext: 'html' },
+                            { state: 'agendasEditar', url: 'agendas/:id/editar', file: 'agendasNuevo', ext: 'html' },
                     ],
                     navigation : {
                         aside: [
                             // MENU
                             { name: 'Menú', url: '', icon: '', title: 1 },
                                 { name: 'Usuarios', url: '#/usuarios', icon: 'ti-user', title: 0 },
+                                { name: 'Agendas', url: '#/agendas', icon: 'ti-calendar', title: 0 },
                         ],
                         header: [
                             { name: 'Mi perfil', url: '#/perfil', icon: 'ti-user', title: 1 },
