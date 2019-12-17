@@ -142,6 +142,10 @@ app.controller( 'agendasController', ['$scope', '$rootScope', '$state', '$stateP
         $state.go('agendasEditar', { id : agenda.id });
     };
 
+    $scope.horarios = function( agenda ) {
+        $state.go('agendasHorarios', { id : agenda.id });
+    };
+
     $scope.eliminar = function( agenda ) {
         $message.confirm({
             text    : '¿Estás seguro de eliminar el agendas '+agenda.vc_nombre+'?',

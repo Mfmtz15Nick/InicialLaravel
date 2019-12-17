@@ -48,13 +48,17 @@
 								<thead>
 									<th width="30"><i class="ti-user"></i></th>
 									<th>Nombre</th>
-									<th width="61"></th>
+									<th width="150"></th>
 								</thead>
 								<tbody>
 									<tr ng-repeat="agenda in agendas">
 										<td><i class="ti-user"></i></td>
 										<td>[[ agenda.vc_nombre ]]</td>
 										<td>
+											<a ng-click = "horarios(agenda)" class="tooltip" >
+												<i class="fa fa-clock-o fa-fw"></i>
+												<span class="tooltiptext">Horarios</span>
+											</a>
 											<a ng-click = "editar(agenda)" class="tooltip" >
 												<i class="fa fa-pencil fa-fw"></i>
 												<span class="tooltiptext">Editar</span>

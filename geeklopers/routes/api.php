@@ -30,3 +30,6 @@ use Illuminate\Http\Request;
 
 	Route::resource('agendas', 'AgendasController');
 	Route::get('agendas/{nombre}/buscar', 'AgendasController@buscarByNombre');
+	Route::get('agendas/{id}/horarios', 'AgendasController@horarios');
+	Route::get('agendas/{id}/horarios/nuevo', 'AgendasController@horariosNuevo');
+	Route::post('agendas/{id}/horarios', 'AgendasController@horariosStore');

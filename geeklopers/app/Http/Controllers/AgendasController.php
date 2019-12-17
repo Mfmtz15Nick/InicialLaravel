@@ -22,6 +22,8 @@ class AgendasController extends Controller
 	const ACTIVO 					= 1;
 	const INACTIVO 				= 0;
 	const DATOSXPAGINA 		= 10;
+
+	const DIAS = [ 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo' ];
 	/**
      * Validate a new controller instance.
      *
@@ -253,5 +255,101 @@ class AgendasController extends Controller
                               $q->where('vc_nombre', 'like', '%'.$nombre.'%');
                             })
                             ->paginate(self::DATOSXPAGINA);
+		}
+
+
+		public function horarios($id){
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+			     return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			$agenda =  Agendas::Filtro()->with('horarios')->findOrFail($id);
+
+			$horarios = array();
+
+	    for ( $i = 0; $i < count(self::DIAS); $i++ ) {
+
+	      $horariosDias = array();
+
+	      for ( $j = 0; $j < count($agenda->horarios); $j++) {
+	          if ($agenda->horarios[$j]->nu_dia == ( $i + 1) ) {
+	            array_push( $horariosDias, $agenda->horarios[$j] );
+	          }
+	      }
+
+	      $dia = [
+	        'id'        => ($i + 1),
+	        'vc_nombre' => self::DIAS[$i],
+	        'horarios'  => $horariosDias
+	      ];
+
+	      array_push( $horarios, $dia );
+	    }
+
+	    return ['agenda' => $agenda, 'horarios' => $horarios];
+
+		}
+
+		public function horariosNuevo($id){
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+					 return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			return Agendas::Filtro()->with('horarios')->findOrFail($id);
+		}
+
+		public function horariosStore($id){
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+					 return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			// Validacion de parametros
+			$validator = Validator::make((array)$body, [
+					'nu_dia'      		=> 'required',
+					'tm_entrada'     	=> 'required',
+					'tm_salida'      	=> 'required'
+			]);
+
+			if ($validator->fails()) {
+					return Response::json(['texto' => 'Asegurese de ingresar los datos necesarios.'], 418);
+			}
+
+			try {
+				DB::beginTransaction();
+
+				$agenda = Agenda::Filtro()->findOrFail($id);
+
+			 	$tm_entrada = new Carbon($body->tm_entrada);
+				$tm_salida 	= new Carbon($body->tm_salida);
+
+				if ( $tm_entrada->greaterThanOrEqualTo($tm_salida) ) {
+					throw new Exception('La hora de entrada debe ser menor a la hora de salida.', 418);
+				}
+
+				if ( AgendasHorarios::Filtro()
+																	->where('id_agenda', $id)
+																	->where('nu_dia', $body->nu_dia)
+																	->where('tm_entrada', $tm_entrada->toTimeString() )
+																	->where('tm_salida', $tm_salida->toTimeString() )
+																	->exists() ) {
+					throw new Exception('Este horario en la agenda '.$agenda->vc_nombre.' ya esta registrado', 418);
+				}
+
+				DB::commit();
+				return ['texto' => 'El horario de la agenda '. $agenda->vc_nombre .', fue creado correctamente.'];
+			} catch (Exception $e) {
+				DB::rollBack();
+				return Response::json(['texto' => $e->getMessage()], 418);
+			}
+
 		}
 }
