@@ -62,8 +62,8 @@ app.controller( 'agendasHorariosNuevoController', ['$scope', '$rootScope', '$sta
 
         $loading.show();
 
-        if( !$scope.flags.editar ) {
-            ModelService.custom('post', 'api/agenda/' + $scope.agenda.id + '/horarios', $scope.horario)
+        if( !$scope.flags.editar ) {// CREATE
+            ModelService.custom('post', 'api/agendas/' + $scope.agenda.id + '/horarios', $scope.horario)
                 .success(function (res) {
                     $message.success(res.texto);
                     $state.go('agendasHorarios', { id : $scope.agenda.id });
@@ -78,18 +78,18 @@ app.controller( 'agendasHorariosNuevoController', ['$scope', '$rootScope', '$sta
                 .finally(function(){
                     $loading.hide();
                 });
-        } else {
-            ModelService.update($scope.agenda)
+        } else { // EDITAR
+            ModelService.custom('put', 'api/agendas/horarios/' + $scope.horario.id, $scope.horario)
                 .success(function (res) {
                     $message.success(res.texto);
                     $loading.hide();
-                    $state.go('agendas');
+                    $state.go('agendasHorarios', { id : $scope.agenda.id });
                 })
                 .error(function (error) {
                     if(error.texto){
                         $message.warning(error.texto);
                     } else {
-                        $message.warning('El agenda '+$scope.agenda.vc_nombre+', no se pudo editar correctamente.');
+                        $message.warning('El horario de la agenda '+$scope.agenda.vc_nombre+', no se pudo editar correctamente.');
                     }
                 })
                 .finally(function(){
@@ -108,24 +108,48 @@ app.controller( 'agendasHorariosNuevoController', ['$scope', '$rootScope', '$sta
 
             $loading.show();
 
-            // $scope.flags.editar = true;
-
             console.log($stateParams);
 
-            ModelService.custom('get', 'api/agendas/'+ $stateParams.id + '/horarios/nuevo' )
-                .success(function(res){
-                    $scope.agenda                = res;
-                })
-                .error(function (error) {
-                    if(error.texto){
-                        $message.warning(error.texto);
-                    } else {
-                        $message.warning("No se pudo obtener el registro.");
-                    }
-                })
-                .finally(function(){
-                    $loading.hide();
-                });
+            if ($stateParams.idDia) { // ES UNA ACTUALIZACION
+
+              $scope.flags.editar = true;
+
+              ModelService.custom('get', 'api/agendas/horarios/' + $stateParams.idDia )
+                  .success(function(res){
+                    console.log(res);
+                    $scope.agenda  = res.agenda;
+                    $scope.horario = res;
+                    $scope.horario.tm_entrada = new Date(res.tm_entrada.date);
+                    $scope.horario.tm_salida  = new Date(res.tm_salida.date);
+                    $scope.horario.nu_dia     = ''+res.nu_dia;
+                  })
+                  .error(function (error) {
+                      if(error.texto){
+                          $message.warning(error.texto);
+                      } else {
+                          $message.warning("No se pudo obtener el registro.");
+                      }
+                  })
+                  .finally(function(){
+                      $loading.hide();
+                  });
+            }
+            else { // SE AGREGA UNO NUEVO
+              ModelService.custom('get', 'api/agendas/'+ $stateParams.id + '/horarios/nuevo' )
+                  .success(function(res){
+                      $scope.agenda                = res;
+                  })
+                  .error(function (error) {
+                      if(error.texto){
+                          $message.warning(error.texto);
+                      } else {
+                          $message.warning("No se pudo obtener el registro.");
+                      }
+                  })
+                  .finally(function(){
+                      $loading.hide();
+                  });
+            }
         });
     };
 

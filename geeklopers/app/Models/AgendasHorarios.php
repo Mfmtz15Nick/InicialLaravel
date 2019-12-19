@@ -10,8 +10,8 @@ class AgendasHorarios extends BaseModel
 	protected $table 		= 'agendasHorarios';
 	protected $fillable = ['id_agenda', 'nu_dia', 'tm_entrada', 'tm_salida', 'id_creador'];
 
-	// Relacion - Horarios
-  public function horarios()
+	// Relacion - Agenda
+  public function agenda()
   {
       return $this->belongsTo('App\Models\Agendas', 'id_agenda');
   }

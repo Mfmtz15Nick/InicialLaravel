@@ -33,7 +33,11 @@
                         // AGENDAS HORARIOS
                             { state: 'agendasHorarios', url: 'agendas/:id/horarios', file: 'agendasHorarios', ext: 'html' },
                             { state: 'agendasHorariosNuevo', url: 'agendas/:id/horarios/nuevo', file: 'agendasHorariosNuevo', ext: 'html' },
-                            { state: 'agendasHorariosEditar', url: 'agendas/:id/horarios/editar', file: 'agendasHorariosNuevo', ext: 'html' },
+                            { state: 'agendasHorariosEditar', url: 'agendas/:id/horarios/:idDia/editar', file: 'agendasHorariosNuevo', ext: 'html' },
+                      // CITAS
+                          { state: 'citas', url: 'citas', file: 'citas', ext: 'html' },
+                          { state: 'citasNuevo', url: 'citas/nuevo', file: 'citasNuevo', ext: 'html' },
+                          { state: 'citasEditar', url: 'citas/:id/editar', file: 'citasNuevo', ext: 'html' },
                     ],
                     navigation : {
                         aside: [
@@ -41,6 +45,7 @@
                             { name: 'Menú', url: '', icon: '', title: 1 },
                                 { name: 'Usuarios', url: '#/usuarios', icon: 'ti-user', title: 0 },
                                 { name: 'Agendas', url: '#/agendas', icon: 'ti-calendar', title: 0 },
+                                { name: 'Citas', url: '#/citas', icon: 'ti-star', title: 0 },
                         ],
                         header: [
                             { name: 'Mi perfil', url: '#/perfil', icon: 'ti-user', title: 1 },

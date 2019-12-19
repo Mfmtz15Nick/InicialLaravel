@@ -209,3 +209,26 @@ CREATE TABLE agendasHorarios(
   FOREIGN KEY( id_creador ) REFERENCES usuarios ( id ),
   FOREIGN KEY( id_agenda ) REFERENCES agendas ( id )
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+-- CITAS
+
+/* Tabla de citas */
+DROP TABLE IF EXISTS citas;
+CREATE TABLE citas(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  id_agenda INT UNSIGNED NOT NULL,
+
+  vc_nombre VARCHAR(50) NOT NULL,
+  dt_fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  sn_activo TINYINT NOT NULL DEFAULT 1,
+  sn_eliminado TINYINT NOT NULL DEFAULT 0,
+  dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  dt_eliminado TIMESTAMP NULL,
+  id_creador INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY( id ),
+  FOREIGN KEY( id_creador ) REFERENCES usuarios ( id ),
+  FOREIGN KEY( id_agenda ) REFERENCES agendas ( id )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;

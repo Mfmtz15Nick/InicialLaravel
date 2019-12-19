@@ -46,7 +46,7 @@
               <div class="form-group">
                 <label class="col-sm-3 control-label">Dia</label>
                 <div class="col-sm-6">
-                  <select class="form-control required" ng-model="horario.nu_dia">
+                  <select class="form-control required" ng-model="horario.nu_dia" ng-disabled = "flags.editar">
                     <option value="">Seleccionar Dia...</option>
                     <option ng-repeat ="dia in dias" value="[[ dia.id ]]">[[ dia.vc_nombre ]]</option>
                   </select>

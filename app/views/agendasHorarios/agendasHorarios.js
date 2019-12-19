@@ -34,7 +34,7 @@ app.controller( 'agendasHorariosController', ['$scope', '$rootScope', '$state', 
     };
 
     $scope.editar = function( horario ) {
-        $state.go('agendasHorariosEditar', { id : horario.id });
+        $state.go('agendasHorariosEditar', { id : $scope.agenda.id, idDia: horario.id  });
     };
 
     $scope.eliminar = function( horario, horarioDia ) {
@@ -42,7 +42,7 @@ app.controller( 'agendasHorariosController', ['$scope', '$rootScope', '$state', 
           text    : '¿Estás seguro de eliminar el horario de '+ horarioDia.tm_entrada  +' a '+ horarioDia.tm_salida +' del dia ' +horario.vc_nombre+'?',
           callback : function( msg ){
               $loading.show();
-              ModelService.custom('delete', 'api/agendas/'+ horarioDia.id + '/horarios' )
+              ModelService.custom('delete', 'api/agendas/horarios/'+ horarioDia.id )
                   .success(function(result){
                       msg.close();
                       var posicionDia     = $util.getPosition($scope.horarios, 'id', horario.id);

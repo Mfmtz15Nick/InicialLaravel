@@ -326,11 +326,14 @@ class AgendasController extends Controller
 			try {
 				DB::beginTransaction();
 
-				$agenda = Agenda::Filtro()->findOrFail($id);
-
+				$agenda = Agendas::Filtro()->findOrFail($id);
+				// Se crea las horas como Carbon
 			 	$tm_entrada = new Carbon($body->tm_entrada);
 				$tm_salida 	= new Carbon($body->tm_salida);
-
+				// Se restan 7 horas por la zona horaria
+				$tm_entrada = $tm_entrada->subHours(7);
+				$tm_salida  = $tm_salida->subHours(7);
+				// Se valida si la hora de entrada es menor a la hora de salida
 				if ( $tm_entrada->greaterThanOrEqualTo($tm_salida) ) {
 					throw new Exception('La hora de entrada debe ser menor a la hora de salida.', 418);
 				}
@@ -344,10 +347,342 @@ class AgendasController extends Controller
 					throw new Exception('Este horario en la agenda '.$agenda->vc_nombre.' ya esta registrado', 418);
 				}
 
+				if(
+						// D
+						// Fecha registrada: 9:00 - 10:00
+						// Fecha a agregar: 8:00 - 11:00
+						// 8:00 > 9:00 - 10:00 < 11:00
+						// tm_entrada > 9:00 - 10:00 < tm_salida
+						AgendasHorarios::Filtro()
+																			->where('id_agenda', $id)
+																			->where('nu_dia', $body->nu_dia)
+																			->where('tm_entrada', '>', $tm_entrada->toTimeString() )
+																			->where('tm_salida', '<', $tm_salida->toTimeString() )
+																			->exists()
+						||
+						// A
+						// Fecha registrada: 9:00 - 10:00
+						// Fecha a agregar: 8:00 - 9:30
+						// 8:00 > 9:00 - > 9:30 < 10:00
+						// tm_entrada > 9:00  && 9:00 < tm_salida && tm_salida > 10:00
+						AgendasHorarios::Filtro()
+																			->where('id_agenda', $id)
+																			->where('nu_dia', $body->nu_dia)
+																			// 9:00 > 9:30
+																			->where('tm_entrada', '>', $tm_entrada->toTimeString() )
+																			// 9:00 < 11:00
+																			->where('tm_entrada', '<', $tm_salida->toTimeString() )
+																			// 10:00 > 11:00
+																			->where('tm_salida', '>', $tm_salida->toTimeString() )
+																			->exists()
+						||
+						// B
+						// Fecha registrada: 9:00 - 10:00
+						// Fecha a agregar: 9:30 - 10:30
+						// 9:00 < 9:30 > 10:00 < 10:30
+						// 9:00 < tm_entrada && 10:00 > tm_entrada && 10:00 < tm_salida
+						AgendasHorarios::Filtro()
+																			->where('id_agenda', $id)
+																			->where('nu_dia', $body->nu_dia)
+																			// 9:00 < 9:30
+																			->where('tm_entrada', '<', $tm_entrada->toTimeString() )
+																			// 10:00 > 9:30
+																			->where('tm_salida', '>', $tm_entrada->toTimeString() )
+																			// 10:00 < 11:00
+																			->where('tm_salida', '<', $tm_salida->toTimeString() )
+																			->exists()
+						||
+						// C
+						// Fecha registrada: 9:00 - 10:00
+						// Fecha a agregar: 9:15 - 9:45
+						// 9:00 < 9:15 - 9:45 < 10:00
+						// 9:00 < tm_entrada && 10:00 > tm_entrada && 10:00 < tm_salida
+						AgendasHorarios::Filtro()
+																			->where('id_agenda', $id)
+																			->where('nu_dia', $body->nu_dia)
+																			// 9:00 < 9:15
+																			->where('tm_entrada', '<', $tm_entrada->toTimeString() )
+																			// 10:00 > 9:15
+																			->where('tm_salida', '>', $tm_entrada->toTimeString() )
+																			// 9:00 < 9:45
+																			->where('tm_entrada', '<', $tm_salida->toTimeString() )
+																			// 10:00 > 9:45
+																			->where('tm_salida', '>', $tm_salida->toTimeString() )
+																			->exists()
+					||
+
+					// E
+					// Fecha registrada: 9:00 - 10:00
+					// Fecha a agregar: 9:30 - 10:00
+					// 9:00 < 9:30 - 10:00 <= 10:00
+					// 9:00 < tm_entrada && 10:00 > tm_entrada && 10:00 <= tm_salida
+					AgendasHorarios::Filtro()
+																		->where('id_agenda', $id)
+																		->where('nu_dia', $body->nu_dia)
+																		// 9:00 < 9:15
+																		->where('tm_entrada', '<', $tm_entrada->toTimeString() )
+																		// 10:00 > 9:15
+																		->where('tm_salida', '>=', $tm_salida->toTimeString() )
+																		->exists()
+					||
+					// F
+					// Fecha registrada: 9:00 - 10:00
+					// Fecha a agregar: 9:00 - 9:30
+					// 9:00 <= 9:00 - 9:30 < 10:00
+					// 9:00 <= tm_entrada && 10:00 > tm_entrada && 10:00 < tm_salida
+					AgendasHorarios::Filtro()
+																		->where('id_agenda', $id)
+																		->where('nu_dia', $body->nu_dia)
+																		// 9:00 < 9:15
+																		->where('tm_entrada', '<=', $tm_entrada->toTimeString() )
+																		// 10:00 > 9:15
+																		->where('tm_salida', '>', $tm_salida->toTimeString() )
+																		->exists()
+
+					||
+					AgendasHorarios::Filtro()
+										->where([
+												['id_agenda', $id],
+												['nu_dia', $body->nu_dia]
+										])
+										->whereBetween('tm_entrada', [ $tm_entrada->toTimeString(), $tm_salida->toTimeString()])
+										->whereBetween('tm_salida', [ $tm_entrada->toTimeString(), $tm_salida->toTimeString()])
+										->exists()
+
+				){
+					throw new Exception('Este horario choca con una hora registrada.', 418);
+				}
+
+				// Se crea el registro de la hora de la agenda
+				AgendasHorarios::create([
+					'id_agenda' 	=> $id,
+					'nu_dia' 			=> $body->nu_dia,
+					'tm_entrada' 	=> $tm_entrada->toTimeString(),
+					'tm_salida' 	=> $tm_salida->toTimeString(),
+					'id_creador' 	=> $body->usuario->id
+				]);
+
 				DB::commit();
 				return ['texto' => 'El horario de la agenda '. $agenda->vc_nombre .', fue creado correctamente.'];
 			} catch (Exception $e) {
 				DB::rollBack();
+				return Response::json(['texto' => $e->getMessage()], 418);
+			}
+
+		}
+
+
+
+		public function horarioGetById($id){
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+					 return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			$agendaHorario = AgendasHorarios::Filtro()->with('agenda')->findOrFail($id);
+			$agendaHorario->tm_entrada 	=  new Carbon($agendaHorario->tm_entrada);
+			$agendaHorario->tm_salida 	=  new Carbon($agendaHorario->tm_salida);
+
+			return $agendaHorario;
+		}
+
+		public function horarioUpdate($id){
+
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+					 return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			// Validacion de parametros
+			$validator = Validator::make((array)$body, [
+					'nu_dia'      		=> 'required',
+					'tm_entrada'     	=> 'required',
+					'tm_salida'      	=> 'required'
+			]);
+
+			if ($validator->fails()) {
+					return Response::json(['texto' => 'Asegurese de ingresar los datos necesarios.'], 418);
+			}
+
+			try {
+				DB::beginTransaction();
+
+				$agendaHorario = AgendasHorarios::Filtro()->with('agenda')->findOrFail($id);
+
+				// Se crea las horas como Carbon
+			 	$tm_entrada = new Carbon($body->tm_entrada);
+				$tm_salida 	= new Carbon($body->tm_salida);
+				// Se restan 7 horas por la zona horaria
+				$tm_entrada = $tm_entrada->subHours(7);
+				$tm_salida  = $tm_salida->subHours(7);
+				// Se valida si la hora de entrada es menor a la hora de salida
+				if ( $tm_entrada->greaterThanOrEqualTo($tm_salida) ) {
+					throw new Exception('La hora de entrada debe ser menor a la hora de salida.', 418);
+				}
+
+				if ( AgendasHorarios::Filtro()
+																	->where('id', '!=', $id)
+																	->where('id_agenda', $agendaHorario->id_agenda)
+																	->where('nu_dia', $body->nu_dia)
+																	->where('tm_entrada', $tm_entrada->toTimeString() )
+																	->where('tm_salida', $tm_salida->toTimeString() )
+																	->exists() ) {
+					throw new Exception('Este horario en la agenda '.$agendaHorario->agenda->vc_nombre.' ya esta registrado', 418);
+				}
+
+				if(
+						// D
+						// Fecha registrada: 9:00 - 10:00
+						// Fecha a agregar: 8:00 - 11:00
+						// 8:00 > 9:00 - 10:00 < 11:00
+						// tm_entrada > 9:00 - 10:00 < tm_salida
+						AgendasHorarios::Filtro()
+																			->where('id', '!=', $id)
+																			->where('id_agenda', $agendaHorario->id_agenda)
+																			->where('nu_dia', $body->nu_dia)
+																			->where('tm_entrada', '>', $tm_entrada->toTimeString() )
+																			->where('tm_salida', '<', $tm_salida->toTimeString() )
+																			->exists()
+						||
+						// A
+						// Fecha registrada: 9:00 - 10:00
+						// Fecha a agregar: 8:00 - 9:30
+						// 8:00 > 9:00 - > 9:30 < 10:00
+						// tm_entrada > 9:00  && 9:00 < tm_salida && tm_salida > 10:00
+						AgendasHorarios::Filtro()
+																			->where('id', '!=', $id)
+																			->where('id_agenda', $agendaHorario->id_agenda)
+																			->where('nu_dia', $body->nu_dia)
+																			// 9:00 > 9:30
+																			->where('tm_entrada', '>', $tm_entrada->toTimeString() )
+																			// 9:00 < 11:00
+																			->where('tm_entrada', '<', $tm_salida->toTimeString() )
+																			// 10:00 > 11:00
+																			->where('tm_salida', '>', $tm_salida->toTimeString() )
+																			->exists()
+						||
+						// B
+						// Fecha registrada: 9:00 - 10:00
+						// Fecha a agregar: 9:30 - 10:30
+						// 9:00 < 9:30 > 10:00 < 10:30
+						// 9:00 < tm_entrada && 10:00 > tm_entrada && 10:00 < tm_salida
+						AgendasHorarios::Filtro()
+																			->where('id', '!=', $id)
+																			->where('id_agenda', $agendaHorario->id_agenda)
+																			->where('nu_dia', $body->nu_dia)
+																			// 9:00 < 9:30
+																			->where('tm_entrada', '<', $tm_entrada->toTimeString() )
+																			// 10:00 > 9:30
+																			->where('tm_salida', '>', $tm_entrada->toTimeString() )
+																			// 10:00 < 11:00
+																			->where('tm_salida', '<', $tm_salida->toTimeString() )
+																			->exists()
+						||
+						// C
+						// Fecha registrada: 9:00 - 10:00
+						// Fecha a agregar: 9:15 - 9:45
+						// 9:00 < 9:15 - 9:45 < 10:00
+						// 9:00 < tm_entrada && 10:00 > tm_entrada && 10:00 < tm_salida
+						AgendasHorarios::Filtro()
+																			->where('id', '!=', $id)
+																			->where('id_agenda', $agendaHorario->id_agenda)
+																			->where('nu_dia', $body->nu_dia)
+																			// 9:00 < 9:15
+																			->where('tm_entrada', '<', $tm_entrada->toTimeString() )
+																			// 10:00 > 9:15
+																			->where('tm_salida', '>', $tm_entrada->toTimeString() )
+																			// 9:00 < 9:45
+																			->where('tm_entrada', '<', $tm_salida->toTimeString() )
+																			// 10:00 > 9:45
+																			->where('tm_salida', '>', $tm_salida->toTimeString() )
+																			->exists()
+
+
+					||
+					// E
+					// Fecha registrada: 9:00 - 10:00
+					// Fecha a agregar: 9:30 - 10:00
+					// 9:00 < 9:30 - 10:00 <= 10:00
+					// 9:00 < tm_entrada && 10:00 > tm_entrada && 10:00 <= tm_salida
+					AgendasHorarios::Filtro()
+																		->where('id', '!=', $id)
+																		->where('id_agenda', $agendaHorario->id_agenda)
+																		->where('nu_dia', $body->nu_dia)
+																		// 9:00 < 9:15
+																		->where('tm_entrada', '<', $tm_entrada->toTimeString() )
+																		// 10:00 > 9:15
+																		->where('tm_salida', '>=', $tm_salida->toTimeString() )
+																		->exists()
+					||
+					// F
+					// Fecha registrada: 9:00 - 10:00
+					// Fecha a agregar: 9:00 - 9:30
+					// 9:00 <= 9:00 - 9:30 < 10:00
+					// 9:00 <= tm_entrada && 10:00 > tm_entrada && 10:00 < tm_salida
+					AgendasHorarios::Filtro()
+																		->where('id', '!=', $id)
+																		->where('id_agenda', $agendaHorario->id_agenda)
+																		->where('nu_dia', $body->nu_dia)
+																		// 9:00 < 9:15
+																		->where('tm_entrada', '<=', $tm_entrada->toTimeString() )
+																		// 10:00 > 9:15
+																		->where('tm_salida', '>', $tm_salida->toTimeString() )
+																		->exists()
+
+					||
+					AgendasHorarios::Filtro()
+										->where([
+												['id', '!=', $id],
+												['id_agenda', $agendaHorario->id_agenda],
+												['nu_dia', $body->nu_dia]
+										])
+										->whereBetween('tm_entrada', [ $tm_entrada->toTimeString(), $tm_salida->toTimeString()])
+										->whereBetween('tm_salida', [ $tm_entrada->toTimeString(), $tm_salida->toTimeString()])
+										->exists()
+
+				){
+					throw new Exception('Este horario choca con una hora registrada.', 418);
+				}
+
+				$agendaHorario->tm_entrada 	= $tm_entrada->toTimeString();
+				$agendaHorario->tm_salida 	= $tm_salida->toTimeString();
+				$agendaHorario->save();
+
+				DB::commit();
+				return ['texto' => 'El horario de la agenda '. $agendaHorario->agenda->vc_nombre .', fue actualizado correctamente.'];
+			} catch (Exception $e) {
+				DB::rollBack();
+				return Response::json(['texto' => $e->getMessage()], 418);
+			}
+		}
+
+		public function horarioDelete($id){
+
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+					 return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			try {
+				DB::beginTransaction();
+
+				$agendaHorario = AgendasHorarios::Filtro()->with('agenda')->findOrFail($id);
+				$agendaHorario->sn_activo 		= self::INACTIVO;
+				$agendaHorario->sn_eliminado 	= self::ACTIVO;
+				$agendaHorario->save();
+				$agendaHorario->delete();
+
+				DB::commit();
+				return ['texto' => 'El horario de la agenda '. $agendaHorario->agenda->vc_nombre .', fue eliminado correctamente.'];
+			} catch (Exception $e) {
+				DB::rollBack();
+				Log::info(['texto' => $e->getMessage()]);
 				return Response::json(['texto' => $e->getMessage()], 418);
 			}
 

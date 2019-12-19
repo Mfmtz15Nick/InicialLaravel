@@ -33,3 +33,10 @@ use Illuminate\Http\Request;
 	Route::get('agendas/{id}/horarios', 'AgendasController@horarios');
 	Route::get('agendas/{id}/horarios/nuevo', 'AgendasController@horariosNuevo');
 	Route::post('agendas/{id}/horarios', 'AgendasController@horariosStore');
+	Route::get('agendas/horarios/{id}', 'AgendasController@horarioGetById');
+	Route::put('agendas/horarios/{id}', 'AgendasController@horarioUpdate');
+	Route::delete('agendas/horarios/{id}', 'AgendasController@horarioDelete');
+
+	// CITAS
+	Route::resource('citas', 'CitasController');
+	Route::get('citas/{nombre}/buscar', 'CitasController@buscarByNombre');
