@@ -188,6 +188,28 @@ CREATE TABLE agendas(
   FOREIGN KEY( id_creador ) REFERENCES usuarios ( id )
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
+/* Tabla de agendasImagenes */
+DROP TABLE IF EXISTS agendasImagenes;
+CREATE TABLE agendasImagenes(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  id_agenda INT UNSIGNED NOT NULL,
+  nu_posicion SMALLINT(6) NOT NULL,
+
+  vc_imagen VARCHAR(100) NOT NULL,
+  vc_imagenUrl TEXT NOT NULL,
+
+  sn_activo TINYINT NOT NULL DEFAULT 1,
+  sn_eliminado TINYINT NOT NULL DEFAULT 0,
+  dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  dt_eliminado TIMESTAMP NULL,
+  id_creador INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY( id ),
+  FOREIGN KEY( id_creador ) REFERENCES usuarios ( id ),
+  FOREIGN KEY( id_agenda ) REFERENCES agendas ( id )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
 /* Tabla de agendasHorarios */
 DROP TABLE IF EXISTS agendasHorarios;
 CREATE TABLE agendasHorarios(

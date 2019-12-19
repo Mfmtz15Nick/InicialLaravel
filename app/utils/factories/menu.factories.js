@@ -30,6 +30,7 @@
                             { state: 'agendas', url: 'agendas', file: 'agendas', ext: 'html' },
                             { state: 'agendasNuevo', url: 'agendas/nuevo', file: 'agendasNuevo', ext: 'html' },
                             { state: 'agendasEditar', url: 'agendas/:id/editar', file: 'agendasNuevo', ext: 'html' },
+                            { state: 'agendasGaleria', url: 'agendas/:id/galeria', file: 'agendasGaleria', ext: 'html' },
                         // AGENDAS HORARIOS
                             { state: 'agendasHorarios', url: 'agendas/:id/horarios', file: 'agendasHorarios', ext: 'html' },
                             { state: 'agendasHorariosNuevo', url: 'agendas/:id/horarios/nuevo', file: 'agendasHorariosNuevo', ext: 'html' },

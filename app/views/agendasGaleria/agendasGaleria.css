@@ -1,0 +1,101 @@
+/*
+|==========================================================================
+| Geeklopers - Document CSS
+|==========================================================================
+|
+|
+| - CSS de la Vista de agendasGaleria
+|
+*/
+
+.as-sortable-item {
+    /*border: solid 1px #ddd;
+    background-color: #ffffff;*/
+}
+
+.as-sortable-item {
+    -ms-touch-action: none;
+    touch-action: none;
+    /* to disable context menu on iOS devices */
+    -webkit-touch-callout: none;
+}
+
+.as-sortable-item-handle {
+    cursor: move;
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
+}
+.as-sortable-placeholder { display: block; background-color: #ddd; float: left;}
+/*
+.as-sortable-placeholder:before {
+    content: '';
+    display: block;
+    width: inherit;
+    height: inherit;
+    position: absolute;
+    background-color: #ddd;
+}
+*/
+.as-sortable-drag {
+    position: absolute;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.as-sortable-drag .element { position: relative; background-color: #FFF; margin: 15px; overflow: hidden; text-align: center; padding-top: 20px; border: 1px solid #FFF; border-top-color: #a4d41e; width: 200px}
+.as-sortable-drag .element > i { font-size: 32px;}
+.as-sortable-drag .element h4 { font-size: 16px; padding: 5px 10px; height: 45px; max-height: 45px; overflow: hidden; font-family: 'lato_regular';}
+.as-sortable-drag .element h5 { font-size: 12px; padding: 0 10px; margin: 0; margin-bottom: 10px; height: 26px; max-height: 26px; overflow: hidden; font-family: 'lato_regular';}
+.as-sortable-drag .element .options { display: none;}
+
+.as-sortable-hidden {
+    display: none !important;
+}
+
+.as-sortable-un-selectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.agendasGaleria .imagesCollection .element {position: relative;background-color: #FFF;overflow: hidden;text-align: center;padding-top: 15px;border: 1px solid #FFF;border-top-color: #4bb8ec;}
+.agendasGaleria .imagesCollection .element .options { border-top: 1px solid #eaeaea; min-height: 37px;}
+.agendasGaleria .imagesCollection .element .options ul { padding: 0; margin: 0;}
+.agendasGaleria .imagesCollection .element .options ul li { display: inline-block; width: 32%;}
+.agendasGaleria .imagesCollection .element .options ul li a { width: 100%; font-size: 18px; padding: 5px 0 ; display: block; cursor: pointer; color: #333; text-decoration: none;}
+.agendasGaleria .imagesCollection .element .options ul li a:hover { color: #4bb8ec;}
+
+.agendasGaleria .columna-imagenes {padding:10px;}
+.agendasGaleria .columna-imagenes  .element .options {border: 1px solid #eaeaea; border-bottom-color:1px solid  #eaeaea; border-right-color:1px solid  #eaeaea;   padding:0;}
+.agendasGaleria .columna-imagenes  .element img {width: 100%; max-height: 200px}
+
+.ilustracion { height: 200px; }
+
+@media (min-width: 1600px) {
+    /*body { border: 2px solid brown;}/**/
+}
+/* Large desktops and laptops */
+@media (min-width: 1200px) and (max-width: 1599px) {
+    /*body { border: 2px solid yellow;}/**/
+}
+/* Portrait tablets and medium desktops */
+@media (min-width: 992px) and (max-width: 1199px) {
+    /*body { border: 2px solid green;}/**/
+}
+/* Portrait tablets and small desktops */
+@media (min-width: 768px) and (max-width: 991px) {
+    /*body { border: 2px solid cyan;}/**/
+}
+@media (max-width: 991px){
+}
+/* Landscape phones and portrait tablets */
+@media (max-width: 767px) {
+    /*body { border: 2px solid orange;}/**/
+}
+/* Landscape phones and smaller */
+@media (max-width: 480px) {
+    /*body { border: 2px solid red;}/**/
+}

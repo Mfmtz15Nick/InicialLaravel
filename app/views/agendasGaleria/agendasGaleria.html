@@ -1,0 +1,142 @@
+<!--
+|==========================================================================
+| Geeklopers - Document HTML
+|==========================================================================
+|
+|
+| - Vista de agendasGaleria
+|
+-->
+
+<div class="view agendasGaleria" ng-controller="agendasGaleriaController">
+
+   <div class="container-fluid">
+      <div class="row header">
+         <div class="col-sm-8 ccs-title">
+            <h2>Imágenes de agenda</h2>
+            <ul>
+               <li><span><a href="#/inicio">Inicio</a></span></li>
+               <li><span> / <a href="#/agendas">Agendas</a></span></li>
+               <li><span> / Imágenes</span></li>
+            </ul>
+            <h4>Agenda: [[ agenda.vc_nombre ]]</h4>
+         </div>
+         <div class="col-sm-4 ccs-buttons">
+            <button class="btn btn-info" ng-click="regresar()">
+               <i class="fa fa-arrow-left fa-fw"></i> Regresar
+            </button>
+            <button class="btn btn-success" ng-click="guardar()">
+               <i class="fa fa-hdd-o fa-fw"></i> <span ng-if="!flags.editar">Guardar</span><span ng-if="flags.editar">Actualizar</span>
+            </button>
+         </div>
+      </div>
+
+      <div class="row section">
+         <div class="col-xs-12">
+            <div class="panel ccs-panel">
+               <div class="panel-heading">
+                  <h5>Agregar imágen al album</h5>
+               </div>
+               <div class="panel-body">
+                  <form onSubmit="return false;" class="form-validate">
+                     <div class="detail">
+                        <div class="row form-group">
+                           <!-- IMAGENES A SUBIR -->
+                           <div class="col-sm-6 img-previo">
+                              <div class="row">
+                                 <div class="col-sm-6 text-center"  ng-repeat="agendas_imagen in temporal" style="margin-bottom: 15px;">
+                                    <div style="height: 200px; width: 100%; background-color: #f5f5f5;">
+                                       <img ng-src="images/agenda/[[agendas_imagen.vc_imagen]]" alt="" ng-show="agendas_imagen.vc_imagen" style="max-width: 100%; max-height: 200px;"/>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <!-- FORMULARIO PARA SUBIR -->
+                           <div class="col-sm-6">
+                              <div class="images">
+                                 <input type="file" nv-file-select="" uploader="uploader" class="form-control"  multiple/>
+                                 <div class="table-responsive" style="margin-top: 15px">
+                                    <table class="table" ng-show="uploader.queue[0].file"  >
+                                       <thead>
+                                          <tr>
+                                             <th width="100">Nombre</th>
+                                             <th>Tamaño</th>
+                                             <th>Progreso</th>
+                                             <th width="100">Estatus</th>
+                                             <th>Acciones</th>
+                                          </tr>
+                                       </thead>
+                                       <tbody>
+                                          <tr ng-repeat="item in uploader.queue">
+                                             <td>
+                                                <strong>[[ item.file.name ]]</strong>
+                                                <div ng-show="uploader.isHTML5" ng-thumb="{ file: item._file, height: 100 }"></div>
+                                             </td>
+                                             <td ng-show="uploader.isHTML5" nowrap>[[ item.file.size/1024/1024|number:2 ]] MB</td>
+                                             <td ng-show="uploader.isHTML5">
+                                                <div class="progress" style="margin-bottom: 0;">
+                                                   <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                                                </div>
+                                             </td>
+                                             <td class="text-center">
+                                                <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                                                <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                                                <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                                             </td>
+                                             <td nowrap>
+                                                <button type="button" class="btn btn-danger btn-xs" ng-click="deleteItem(item, $index);">
+                                                <span class="glyphicon glyphicon-trash"></span>
+                                                </button>
+                                             </td>
+                                          </tr>
+                                       </tbody>
+                                    </table>
+                                 </div>
+                              </div>
+
+                              <div class="row">
+                                 <div class="col-xs-12">
+                                    <div class="buttons text-right">
+                                       <button type="submit" class="btn btn-success" ng-click="guardar()"><i class="fa fa-hdd-o fa-fw"></i> Guardar</button>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <!-- IMAGENES DEL ALBUM -->
+      <div class="row">
+         <!-- TITULO -->
+         <div class="col-sm-12 ccs-title">
+            <h2>Imágenes</h2>
+            <h4 ng-if="agenda_imagenes.length == 0" class="text-center">No hay imágenes en el album.</h4>
+         </div>
+
+         <!-- IMAGENES -->
+         <div class="col-sm-12 form-default">
+            <div class="row imagesCollection" as-sortable="acciones" ng-model="agenda_imagenes">
+               <div class="col-sm-3 columna-imagenes" ng-repeat="agendas_imagen in agenda_imagenes" as-sortable-item>
+                  <div class="element"  as-sortable-item-handle>
+                     <div class="ilustracion">
+                        <img class="img-responsive" ng-src="images/agenda/[[agendas_imagen.vc_imagen]]" alt="">
+                     </div>
+                     <div class="options">
+                        <ul>
+                           <li>Orden: [[$index+1]]</li>
+                           <li><a ng-click="eliminar( agendas_imagen, $index )"><i class="ti-trash"></i></a></li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+</div>

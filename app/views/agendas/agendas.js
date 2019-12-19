@@ -142,6 +142,10 @@ app.controller( 'agendasController', ['$scope', '$rootScope', '$state', '$stateP
         $state.go('agendasEditar', { id : agenda.id });
     };
 
+    $scope.galeria = function( agenda ) {
+        $state.go('agendasGaleria', { id : agenda.id });
+    };
+
     $scope.horarios = function( agenda ) {
         $state.go('agendasHorarios', { id : agenda.id });
     };
