@@ -134,12 +134,12 @@ class UsuariosController extends Controller
     // Validacion de parametros
     $validator = Validator::make((array)$body, [
         'id_genero'      		=> 'required',
-				'id_rol'      			=> 'required',
+		'id_rol'      			=> 'required',
         'vc_nombre'      		=> 'required',
         'vc_apellido'    		=> 'required',
         'vc_email'       		=> 'required',
         'vc_password'    		=> 'required',
-        'vc_password_re'    => 'required'
+        'vc_password_re'        => 'required'
     ]);
 
     if ($validator->fails()) {
