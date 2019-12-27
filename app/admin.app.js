@@ -19,7 +19,7 @@ var admin = angular.module(
 		'oc.lazyLoad',
 		'gl.util.factories',
 		'gl.util.services',
-    'gl.authentication.services',
+    	'gl.authentication.services',
 		'gl.menu.factories',
 		'gl.validate.service',
 		'gl.interceptor.factories',
@@ -45,23 +45,25 @@ admin.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$interpo
 admin.run( [ '$rootScope', '$state', '$location', '$util', '$menu', '$authentication',
 	function( $rootScope, $state, $location, $util, $menu, $authentication ){
 
-		const ADMINISTRADOR = 2;
+		let ADMINISTRADOR = 2;
+		let CONSULTOR	 	= 4;
 		// Request User
         $authentication.check( function( res ){
-
-	    	if( !res || $authentication.usuario.rol.id != ADMINISTRADOR ){
-	    		console.log('directo a login');
+	    	if( !res || ($authentication.usuario.rol.id != ADMINISTRADOR )  ){
+				console.log('directo a login');
 	    		// window.location.href = 'login';
 	    	} else {
-	    		$rootScope.usuario = $authentication.usuario;
+				$rootScope.usuario = $authentication.usuario;
+				
 	    		init();
 	    	}
 	    });
 
         var states = [];
 
-	    // INIT
+		// INIT
 	    var init = function(){
+
             switch( $rootScope.usuario.rol.id ){
                 case ADMINISTRADOR : // Adminstrador
                     states = [].concat.call( $menu.general, $menu.admin.states );
@@ -78,7 +80,6 @@ admin.run( [ '$rootScope', '$state', '$location', '$util', '$menu', '$authentica
 	    };
 
 	    var initState = function( callback ){
-
 			// Create State Database
 	    	states.forEach(function( state, index, array ){
 

@@ -3,52 +3,38 @@
 | Geeklopers - Document JS
 |==========================================================================
 |
-| - Controllador de la Vista de usuariosNuevo
+| - Controllador de la Vista de clientesNuevo
 |
 */
 
-var app = angular.module('usuariosNuevo', ['angularFileUpload','as.sortable']);
+var app = angular.module('clientesNuevo', ['angularFileUpload','as.sortable']);
 
 // Controller
-app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', '$util', '$message', '$loading', '$validate', 'ModelService', '$uploader', '$http',
+app.controller( 'clientesNuevoController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', '$util', '$message', '$loading', '$validate', 'ModelService', '$uploader', '$http',
     function( $scope, $rootScope, $state, $stateParams, $location, $util, $message, $loading, $validate, ModelService, $uploader, $http ){
 
 // Scope Variables
-    $scope.usuario  = { id_genero: "", vc_nombre: "", vc_imagen: "", vc_imagenUrl:"" };
+    $scope.cliente  = { vc_nombre: "", vc_apellido: "", nu_telefono:"" };
     $scope.generos  = [];
     $scope.roles    = [];
     $scope.flags    = { editar: false };
 
 // Scope Functions
     var uploader    = $uploader.load({
-        url : 'api/usuarios/upload',
+        url : 'api/clientes/upload',
         autoUpload: true,
         headers: {
             Authorization: localStorage.getItem('gc.token')
         }
     });
 
-    $scope.uploader = uploader;
-
-    uploader.onCompleteItem = function(item, response, status, headers){
-
-        $scope.usuario.vc_imagen    = response.nombre;
-        $scope.usuario.vc_imagenUrl = response.url + response.nombre;
-
-        if( uploader.queue.length > 1 ){
-          for (var i = 0; i < uploader.queue.length; i++) {
-            if ( i == 0 ) {
-              uploader.queue[i].remove();
-            }
-          }
-        }
-    };
+  
 
     $scope.deleteItem = function(item){
-      ModelService.custom('delete', 'api/usuarios/eliminarImagen/' + $scope.usuario.vc_imagen )
+      ModelService.custom('delete', 'api/clientes/eliminarImagen/' + $scope.cliente.vc_imagen )
         .success( function(res){
-          $scope.usuario.vc_imagen    = '';
-          $scope.usuario.vc_imagenUrl = '';
+          $scope.cliente.vc_imagen    = '';
+          $scope.cliente.vc_imagenUrl = '';
           item.remove();
           $message.success(res.texto);
         })
@@ -65,12 +51,12 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
     };
 
     $scope.eliminar = function() {
-        $scope.usuario.vc_imagen    = '';
-        $scope.usuario.vc_imagenUrl = '';
+        $scope.cliente.vc_imagen    = '';
+        $scope.cliente.vc_imagenUrl = '';
     };
 
     $scope.regresar = function() {
-        $state.go('usuarios');
+        $state.go('clientes');
     };
 
     $scope.submit = function() {
@@ -81,42 +67,38 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
 
         if( !$validate.form('form-validate') )
             return;
-
-        if ( $scope.usuario.vc_password != $scope.usuario.vc_password_re ) {
-            $message.warning('Las constraseñas proporcionadas no son identicas.');
-            return;
-        }
+        
 
         $loading.show();
 
         if( !$scope.flags.editar ) {
-            ModelService.add($scope.usuario)
+            ModelService.add($scope.cliente.detalle)
                 .success(function (res) {
                     $message.success(res.texto);
-                    $state.go('usuarios');
+                    $state.go('clientes');
                 })
                 .error(function (error) {
                     if(error.texto){
                         $message.warning(error.texto);
                     } else {
-                        $message.warning('El usuario '+$scope.usuario.vc_nombre+', no se pudo agregar correctamente.');
+                        $message.warning('El cliente '+$scope.cliente.vc_nombre+', no se pudo agregar correctamente.');
                     }
                 })
                 .finally(function(){
                     $loading.hide();
                 });
         } else {
-            ModelService.update($scope.usuario)
+            ModelService.update($scope.cliente.detalle)
                 .success(function (res) {
                     $message.success(res.texto);
                     $loading.hide();
-                    $state.go('usuarios');
+                    $state.go('clientes');
                 })
                 .error(function (error) {
                     if(error.texto){
                         $message.warning(error.texto);
                     } else {
-                        $message.warning('El usuario '+$scope.usuario.vc_nombre+', no se pudo editar correctamente.');
+                        $message.warning('El cliente '+$scope.cliente.vc_nombre+', no se pudo editar correctamente.');
                     }
                 })
                 .finally(function(){
@@ -128,7 +110,7 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
     $scope.init = function(){
 
         // Definir Modelo
-        ModelService.addModel('usuarios');
+        ModelService.addModel('clientes');
 
         $loading.show();
 
@@ -143,14 +125,13 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
 
                     $scope.flags.editar = true;
 
-                    console.log($stateParams);
 
                     ModelService.edit( $stateParams.id )
                         .success(function(res){
-                            $scope.usuario                = res;
-                            $scope.usuario.id_genero      = String($scope.usuario.id_genero);
-                            $scope.usuario.id_rol         = String($scope.usuario.id_rol);
-                            $scope.usuario.vc_password_re = angular.copy($scope.usuario.vc_password);
+                            $scope.cliente                = res;
+                            $scope.cliente.id_genero      = String($scope.cliente.id_genero);
+                            $scope.cliente.id_rol         = String($scope.cliente.id_rol);
+                            $scope.cliente.vc_password_re = angular.copy($scope.cliente.vc_password);
                         })
                         .error(function (error) {
                             if(error.texto){

@@ -1,5 +1,5 @@
 
-/* BASE DE DATOS CURSO GEEKLOPES - LARAVEL */
+/* BASE DE DATOS EVENTOS GEEKLOPES - LARAVEL */
 
 SET FOREIGN_KEY_CHECKS=0;
 
@@ -26,10 +26,7 @@ SET FOREIGN_KEY_CHECKS=0;
     PRIMARY KEY( id )
   )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-  /* Insertar roles */
-  INSERT INTO roles(vc_nombre, id_creador) VALUES('Sistema', 1);
-  INSERT INTO roles(vc_nombre, id_creador) VALUES('Administrador', 1);
-
+  
   /* Tabla de generos */
   DROP TABLE IF EXISTS generos;
   CREATE TABLE generos(
@@ -46,10 +43,7 @@ SET FOREIGN_KEY_CHECKS=0;
     PRIMARY KEY( id )
   )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-  /* Insertar generos */
-  INSERT INTO generos(vc_nombre, id_creador) VALUES('Masculino', 1);
-  INSERT INTO generos(vc_nombre, id_creador) VALUES('Femenino', 1);
-
+  
   /* Tabla de usuarios */
   DROP TABLE IF EXISTS usuarios;
   CREATE TABLE usuarios(
@@ -96,9 +90,6 @@ SET FOREIGN_KEY_CHECKS=0;
     vc_email VARCHAR(50) NOT NULL,
     vc_password VARCHAR(50) NOT NULL,
 
-    vc_imagen VARCHAR(100) NOT NULL,
-    vc_imagenUrl TEXT NOT NULL,
-
     sn_activo TINYINT NOT NULL DEFAULT 1,
     sn_eliminado TINYINT NOT NULL DEFAULT 0,
     dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -112,18 +103,6 @@ SET FOREIGN_KEY_CHECKS=0;
     CONSTRAINT FK_UsuariosDetalles_Generos FOREIGN KEY( id_genero )
       REFERENCES generos ( id )
   )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
-
-  /* Insertar a usuario */
-  INSERT INTO usuarios(id, id_creador) VALUES(1, 1);
-  INSERT INTO usuariosRoles(id_usuario, id_rol, id_creador) VALUES(1,1,1);
-  INSERT INTO usuariosDetalles(id_usuario, id_genero, vc_nombre, vc_apellido, vc_email, vc_password, id_creador)
-      VALUES(1, 1, 'Sistema', 'Bladmir', 'sistema@bladmir.com', 'Sistema123.', 1);
-
-  /* Insertar a usuario */
-  INSERT INTO usuarios(id, id_creador) VALUES(2, 1);
-  INSERT INTO usuariosRoles(id_usuario, id_rol, id_creador) VALUES(2,2,1);
-  INSERT INTO usuariosDetalles(id_usuario, id_genero, vc_nombre, vc_apellido, vc_email, vc_password, id_creador)
-      VALUES(2, 1, 'Admin', 'Bladmir', 'admin@bladmir.com', 'Admin123.', 1 );
 
   /* Tabla de usuariosTokens */
   DROP TABLE IF EXISTS usuariosTokens;
@@ -145,112 +124,104 @@ SET FOREIGN_KEY_CHECKS=0;
     CONSTRAINT FK_Roles FOREIGN KEY( id_rol ) REFERENCES roles ( id )
   )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
+/* --------------------- CATALOGOS --------------------- */
 
-  /* Tabla de usuariosImagenes */
-  DROP TABLE IF EXISTS usuariosImagenes;
-  CREATE TABLE usuariosImagenes(
-    id INT NOT NULL AUTO_INCREMENT,
-    id_usuario INT UNSIGNED NOT NULL,
-
-    vc_imagen VARCHAR(100) NOT NULL,
-    vc_imagenUrl TEXT NOT NULL,
-    nu_posicion SMALLINT(6) NOT NULL,
+/* Tabla de tiposEventos */
+  DROP TABLE IF EXISTS tiposEventos;
+  CREATE TABLE tiposEventos(
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 
     sn_activo TINYINT NOT NULL DEFAULT 1,
     sn_eliminado TINYINT NOT NULL DEFAULT 0,
-    dt_registro TIMESTAMP NOT NULL,
-    dt_editado TIMESTAMP NOT NULL,
+    dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     dt_eliminado TIMESTAMP NULL,
     id_creador INT UNSIGNED NOT NULL,
 
-    PRIMARY KEY (id),
-    FOREIGN KEY( id_usuario ) REFERENCES usuarios ( id ),
-    FOREIGN KEY( id_creador ) REFERENCES usuarios ( id )
+    PRIMARY KEY( id )
+
   )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-/* --------------------- CATALOGOS --------------------- */
+/* Tabla de tiposEventosDetalles */
+  DROP TABLE IF EXISTS tiposEventosDetalles;
+  CREATE TABLE tiposEventosDetalles(
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    id_tiposEventos INT UNSIGNED NOT NULL,
+   
 
-/* Tabla de agendas */
-DROP TABLE IF EXISTS agendas;
-CREATE TABLE agendas(
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    vc_nombre VARCHAR(50) NOT NULL,
+    vc_imagen VARCHAR(50) NOT NULL,
+    vc_imagenUrl VARCHAR(50) NOT NULL,
+   
+    sn_activo TINYINT NOT NULL DEFAULT 1,
+    sn_eliminado TINYINT NOT NULL DEFAULT 0,
+    dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    dt_eliminado TIMESTAMP NULL,
+    id_creador INT UNSIGNED NOT NULL,
 
-  vc_nombre VARCHAR(50) NOT NULL,
+    PRIMARY KEY( id ),
+    CONSTRAINT FK_TiposEventosDetalles_TiposEventos FOREIGN KEY( id_tiposEventos )
+      REFERENCES tiposEventos ( id )
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-  sn_activo TINYINT NOT NULL DEFAULT 1,
-  sn_eliminado TINYINT NOT NULL DEFAULT 0,
-  dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  dt_eliminado TIMESTAMP NULL,
-  id_creador INT UNSIGNED NOT NULL,
 
-  PRIMARY KEY( id ),
-  FOREIGN KEY( id_creador ) REFERENCES usuarios ( id )
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-/* Tabla de agendasImagenes */
-DROP TABLE IF EXISTS agendasImagenes;
-CREATE TABLE agendasImagenes(
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  id_agenda INT UNSIGNED NOT NULL,
-  nu_posicion SMALLINT(6) NOT NULL,
+/* Tabla de clientes */
+  DROP TABLE IF EXISTS clientes;
+  CREATE TABLE clientes(
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 
-  vc_imagen VARCHAR(100) NOT NULL,
-  vc_imagenUrl TEXT NOT NULL,
+    sn_activo TINYINT NOT NULL DEFAULT 1,
+    sn_eliminado TINYINT NOT NULL DEFAULT 0,
+    dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    dt_eliminado TIMESTAMP NULL,
+    id_creador INT UNSIGNED NOT NULL,
 
-  sn_activo TINYINT NOT NULL DEFAULT 1,
-  sn_eliminado TINYINT NOT NULL DEFAULT 0,
-  dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  dt_eliminado TIMESTAMP NULL,
-  id_creador INT UNSIGNED NOT NULL,
+    PRIMARY KEY( id )
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-  PRIMARY KEY( id ),
-  FOREIGN KEY( id_creador ) REFERENCES usuarios ( id ),
-  FOREIGN KEY( id_agenda ) REFERENCES agendas ( id )
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+/* Tabla de clientesDetalles */
+  DROP TABLE IF EXISTS clientesDetalles;
+  CREATE TABLE clientesDetalles(
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    id_cliente INT UNSIGNED NOT NULL,
+   
 
-/* Tabla de agendasHorarios */
-DROP TABLE IF EXISTS agendasHorarios;
-CREATE TABLE agendasHorarios(
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  id_agenda INT UNSIGNED NOT NULL,
+    vc_nombre VARCHAR(50) NOT NULL,
+    vc_apellido VARCHAR(50) NOT NULL,
+    nu_celular VARCHAR(50) NOT NULL,
+   
+    sn_activo TINYINT NOT NULL DEFAULT 1,
+    sn_eliminado TINYINT NOT NULL DEFAULT 0,
+    dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    dt_eliminado TIMESTAMP NULL,
+    id_creador INT UNSIGNED NOT NULL,
 
-  nu_dia SMALLINT(7) NOT NULL,
-  tm_entrada TIME NULL,
-  tm_salida TIME NULL,
+    PRIMARY KEY( id ),
+    CONSTRAINT FK_ClientesDetalles_Clientess FOREIGN KEY( id_cliente )
+      REFERENCES clientes ( id )
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
-  sn_activo TINYINT NOT NULL DEFAULT 1,
-  sn_eliminado TINYINT NOT NULL DEFAULT 0,
-  dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  dt_eliminado TIMESTAMP NULL,
-  id_creador INT UNSIGNED NOT NULL,
 
-  PRIMARY KEY( id ),
-  FOREIGN KEY( id_creador ) REFERENCES usuarios ( id ),
-  FOREIGN KEY( id_agenda ) REFERENCES agendas ( id )
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
--- CITAS
+-- INSERT
+ /* Insertar roles */
+  INSERT INTO roles(vc_nombre, id_creador) VALUES('Sistema', 1);
+  INSERT INTO roles(vc_nombre, id_creador) VALUES('Administrador', 1);
+  INSERT INTO roles(vc_nombre, id_creador) VALUES('Auxiliar', 1);
+  INSERT INTO roles(vc_nombre, id_creador) VALUES('Consultor', 1);
+/* Insertar generos */
+  INSERT INTO generos(vc_nombre, id_creador) VALUES('Masculino', 1);
+  INSERT INTO generos(vc_nombre, id_creador) VALUES('Femenino', 1);
+  /* Insertar a usuario */
+  INSERT INTO usuarios(id, id_creador) VALUES(2, 1);
+  INSERT INTO usuariosRoles(id_usuario, id_rol, id_creador) VALUES(2,2,1);
+   INSERT INTO usuariosDetalles(id_usuario, id_genero, vc_nombre, vc_apellido, vc_email, vc_password, id_creador)
+      VALUES(2, 1, 'Admin', 'Bladmir', 'admin@bladmir.com', 'Admin123.', 1);
 
-/* Tabla de citas */
-DROP TABLE IF EXISTS citas;
-CREATE TABLE citas(
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  id_agenda INT UNSIGNED NOT NULL,
 
-  vc_nombre VARCHAR(50) NOT NULL,
-  dt_fecha TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  sn_activo TINYINT NOT NULL DEFAULT 1,
-  sn_eliminado TINYINT NOT NULL DEFAULT 0,
-  dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  dt_eliminado TIMESTAMP NULL,
-  id_creador INT UNSIGNED NOT NULL,
 
-  PRIMARY KEY( id ),
-  FOREIGN KEY( id_creador ) REFERENCES usuarios ( id ),
-  FOREIGN KEY( id_agenda ) REFERENCES agendas ( id )
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;

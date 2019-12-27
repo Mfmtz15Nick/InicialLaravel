@@ -55,7 +55,8 @@ class LoginController extends Controller
                 if( $usuario->sn_activo == 1 ){
 
                     // Verificar los privilegios del rol
-                    if ($usuario->rol->id_rol != 2) {
+                    $rol = $usuario->rol->id_rol;
+                    if ( $rol != 2 && $rol != 4) {
                         return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
                     }
 

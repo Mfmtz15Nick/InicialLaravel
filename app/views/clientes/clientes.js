@@ -3,19 +3,19 @@
 | Geeklopers - Document JS
 |==========================================================================
 |
-| - Controllador de la Vista de Usuarios
+| - Controllador de la Vista de clientes
 |
 */
 
-var app = angular.module('usuarios', []);
+var app = angular.module('clientes', []);
 
 // Controller
-app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', '$util', '$message', '$loading', '$validate', 'ModelService', '$http',
+app.controller( 'clientesController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', '$util', '$message', '$loading', '$validate', 'ModelService', '$http',
     function( $scope, $rootScope, $state, $stateParams, $location, $util, $message, $loading, $validate, ModelService, $http  ){
 
 // Scope Variables
-    $scope.usuarios               = [];
-    $scope.usuariosPaginados      = [];
+    $scope.clientes               = [];
+    $scope.clientesPaginados      = [];
     $scope.cargando               = false;
     $scope.anteriorUrl            = null;
     $scope.siguienteUrl           = null;
@@ -24,7 +24,7 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     $scope.minimoBusqueda         = 3;
     $scope.total                  = 0;
     $scope.totalMostrarPaginado   = 2;
-    $scope.usuariosPaginados      = [];
+    $scope.clientesPaginados      = [];
     $scope.anteriorUrl            = null;
     $scope.siguienteUrl           = null;
     $scope.paginaActual           = 0;
@@ -50,16 +50,16 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
         $loading.show();
         ModelService.custom('get', url )
             .success(function(res){
-                $scope.usuarios     = res.usuarios.data;
-                $scope.anteriorUrl  = res.usuarios.prev_page_url;
-                $scope.siguienteUrl = res.usuarios.next_page_url;
-                $scope.paginaActual = res.usuarios.current_page;
+                $scope.clientes     = res.clientes.data;
+                $scope.anteriorUrl  = res.clientes.prev_page_url;
+                $scope.siguienteUrl = res.clientes.next_page_url;
+                $scope.paginaActual = res.clientes.current_page;
             })
             .error(function (error) {
                 if(error.texto){
                     $message.warning(error.texto);
                 } else {
-                    $message.warning("No se pudieron obtener los usuarios.");
+                    $message.warning("No se pudieron obtener los clientes.");
                 }
             })
             .finally(function(){
@@ -75,31 +75,31 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
         $scope.cargando = true;
         $loading.show();
 
-        urlConsulta = 'api/usuarios?page='+numero;
+        urlConsulta = 'api/clientes?page='+numero;
 
         if( ( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ) && $scope.buscarRol  ){
-          urlConsulta = 'api/usuarios/'+$scope.buscar+'/'+$scope.buscarRol+'/buscar?page='+numero;
+          urlConsulta = 'api/clientes/'+$scope.buscar+'/'+$scope.buscarRol+'/buscar?page='+numero;
         }
         else if( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ){
-          urlConsulta = 'api/usuarios/'+$scope.buscar+'/buscar?page='+numero;
+          urlConsulta = 'api/clientes/'+$scope.buscar+'/buscar?page='+numero;
         }
         else if ($scope.buscarRol) {
-          urlConsulta = 'api/usuarios/'+$scope.buscarRol+'/buscarPorRol?page='+numero;
+          urlConsulta = 'api/clientes/'+$scope.buscarRol+'/buscarPorRol?page='+numero;
         }
 
           ModelService.custom('get', urlConsulta)
             .success(function(res){
-                $scope.usuarios               = res.usuarios.data;
-                $scope.usuariosPaginados      = res.usuarios.data;
-                $scope.anteriorUrl            = res.usuarios.prev_page_url;
-                $scope.siguienteUrl           = res.usuarios.next_page_url;
-                $scope.paginaActual           = res.usuarios.current_page;
+                $scope.clientes               = res.clientes.data;
+                $scope.clientesPaginados      = res.clientes.data;
+                $scope.anteriorUrl            = res.clientes.prev_page_url;
+                $scope.siguienteUrl           = res.clientes.next_page_url;
+                $scope.paginaActual           = res.clientes.current_page;
             })
             .error(function (error) {
                 if(error.texto){
                     $message.warning(error.texto);
                 } else {
-                    $message.warning("No se pudieron obtener los usuarios.");
+                    $message.warning("No se pudieron obtener los clientes.");
                 }
             })
             .finally(function(){
@@ -109,36 +109,36 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
       }
     };
 
-    $scope.buscarUsuarios = function(){
+    $scope.buscarclientes = function(){
       if( ( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ) || $scope.buscarRol ){
 
         if( ( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ) && $scope.buscarRol  ){
-          urlConsulta = 'api/usuarios/'+$scope.buscar+'/'+$scope.buscarRol+'/buscar';
+          urlConsulta = 'api/clientes/'+$scope.buscar+'/'+$scope.buscarRol+'/buscar';
         }
         else if( $scope.buscar != "" && $scope.buscar.length >= $scope.minimoBusqueda ){
-          urlConsulta = 'api/usuarios/'+$scope.buscar+'/buscar';
+          urlConsulta = 'api/clientes/'+$scope.buscar+'/buscar';
         }
         else if ($scope.buscarRol) {
           $loading.show();
-          urlConsulta = 'api/usuarios/'+$scope.buscarRol+'/buscarPorRol';
+          urlConsulta = 'api/clientes/'+$scope.buscarRol+'/buscarPorRol';
         }
 
         ModelService.custom('get', urlConsulta)
           .success(function(res){
             console.log(res)
 
-              $scope.usuarios           = res.usuarios.data;
-              $scope.usuariosPaginados  = res.usuarios.data;
-              $scope.total              = res.usuarios.last_page;
-              $scope.anteriorUrl        = res.usuarios.prev_page_url;
-              $scope.siguienteUrl       = res.usuarios.next_page_url;
-              $scope.paginaActual       = res.usuarios.current_page;
+              $scope.clientes           = res.clientes.data;
+              $scope.clientesPaginados  = res.clientes.data;
+              $scope.total              = res.clientes.last_page;
+              $scope.anteriorUrl        = res.clientes.prev_page_url;
+              $scope.siguienteUrl       = res.clientes.next_page_url;
+              $scope.paginaActual       = res.clientes.current_page;
           })
           .error(function (error) {
               if(error.texto){
                   $message.warning(error.texto);
               } else {
-                  $message.warning("No se pudieron obtener los usuarios.");
+                  $message.warning("No se pudieron obtener los clientes.");
               }
           })
           .finally(function(){
@@ -155,30 +155,30 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     };
 
     $scope.agregar = function() {
-        $state.go('usuariosNuevo');
+        $state.go('clientesNuevo');
     };
 
-    $scope.editar = function( usuario ) {
-        $state.go('usuariosEditar', { id : usuario.id });
+    $scope.editar = function( cliente ) {
+        $state.go('clientesEditar', { id : cliente.id });
     };
 
-    $scope.eliminar = function( usuario ) {
+    $scope.eliminar = function( cliente ) {
         $message.confirm({
-            text    : '¿Estás seguro de eliminar el usuarios '+usuario.vc_nombre+' '+usuario.vc_apellido+'?',
+            text    : '¿Estás seguro de eliminar el clientes '+cliente.vc_nombre+' '+cliente.vc_apellido+'?',
             callback : function( msg ){
                 $loading.show();
-                ModelService.delete( usuario.id )
+                ModelService.delete( cliente.id )
                     .success(function(res){
                         msg.close();
-                        var posicion = $util.getPosition($scope.usuarios, 'id', usuario.id);
-                        $scope.usuarios.splice( posicion, 1 );
+                        var posicion = $util.getPosition($scope.clientes, 'id', cliente.id);
+                        $scope.clientes.splice( posicion, 1 );
                         $message.success(res.texto);
                     })
                     .error(function (error) {
                         if(error.texto){
                             $message.warning(error.texto);
                         } else {
-                            $message.warning('El usuarios '+usuario.vc_nombre+' '+usuario.vc_apellido+', no pudo eliminar correctamente.');
+                            $message.warning('El clientes '+cliente.vc_nombre+' '+cliente.vc_apellido+', no pudo eliminar correctamente.');
                         }
                     })
                     .finally(function(){
@@ -190,21 +190,15 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
 
     $scope.init = function() {
 
-        ModelService.addModel('usuarios');
+        ModelService.addModel('clientes');
 
         $scope.cargando   = true;
         
 
         ModelService.list()
             .success(function( res ){
-                $scope.roles              = res.roles;
-                $scope.usuarios           = res.usuarios.data;
-                $scope.usuariosPaginados  = res.usuarios.data;
-                $scope.total              = res.usuarios.last_page;
-                $scope.anteriorUrl        = res.usuarios.prev_page_url;
-                $scope.siguienteUrl       = res.usuarios.next_page_url;
-                $scope.paginaActual       = res.usuarios.current_page;
-            })
+            $scope.clientes           = res;
+        })
             .error(function () {
                 $message.warning("No se obtener los registros.");
             })

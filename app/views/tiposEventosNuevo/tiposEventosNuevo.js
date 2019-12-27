@@ -3,25 +3,26 @@
 | Geeklopers - Document JS
 |==========================================================================
 |
-| - Controllador de la Vista de usuariosNuevo
+| - Controllador de El Vista de tiposEventosNuevo
 |
 */
 
-var app = angular.module('usuariosNuevo', ['angularFileUpload','as.sortable']);
+var app = angular.module('tiposEventosNuevo', ['angularFileUpload','as.sortable']);
 
 // Controller
-app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', '$util', '$message', '$loading', '$validate', 'ModelService', '$uploader', '$http',
+app.controller( 'tiposEventosNuevoController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', '$util', '$message', '$loading', '$validate', 'ModelService', '$uploader', '$http',
     function( $scope, $rootScope, $state, $stateParams, $location, $util, $message, $loading, $validate, ModelService, $uploader, $http ){
 
 // Scope Variables
-    $scope.usuario  = { id_genero: "", vc_nombre: "", vc_imagen: "", vc_imagenUrl:"" };
-    $scope.generos  = [];
-    $scope.roles    = [];
-    $scope.flags    = { editar: false };
+    $scope.tipoEvento = { vc_imagenUrl : '' };
+    $scope.generos = [];
+    $scope.flags  = {
+        editar: false
+    };
 
 // Scope Functions
-    var uploader    = $uploader.load({
-        url : 'api/usuarios/upload',
+    var uploader = $uploader.load({
+        url : 'api/tiposEventos/upload',
         autoUpload: true,
         headers: {
             Authorization: localStorage.getItem('gc.token')
@@ -29,48 +30,30 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
     });
 
     $scope.uploader = uploader;
-
+    
     uploader.onCompleteItem = function(item, response, status, headers){
-
-        $scope.usuario.vc_imagen    = response.nombre;
-        $scope.usuario.vc_imagenUrl = response.url + response.nombre;
-
+        $scope.tipoEvento.vc_imagenUrl = response.nombre;
+        
         if( uploader.queue.length > 1 ){
-          for (var i = 0; i < uploader.queue.length; i++) {
-            if ( i == 0 ) {
-              uploader.queue[i].remove();
+            for (var i = 0; i < uploader.queue.length; i++) {
+                if ( i == 0 ) {
+                    uploader.queue[i].remove();
+                }
             }
-          }
         }
     };
-
     $scope.deleteItem = function(item){
-      ModelService.custom('delete', 'api/usuarios/eliminarImagen/' + $scope.usuario.vc_imagen )
-        .success( function(res){
-          $scope.usuario.vc_imagen    = '';
-          $scope.usuario.vc_imagenUrl = '';
-          item.remove();
-          $message.success(res.texto);
-        })
-        .error(function (error) {
-            if(error.texto){
-                $message.warning(error.texto);
-            } else {
-                $message.warning('La imagen no se pudo eliminar correctamente.');
-            }
-        })
-        .finally(function(){
-            $loading.hide();
-        });
+        $scope.tipoEvento.vc_imagenUrl = '';
+        item.remove();
     };
 
     $scope.eliminar = function() {
-        $scope.usuario.vc_imagen    = '';
-        $scope.usuario.vc_imagenUrl = '';
+        $scope.tipoEvento.vc_imagenUrl = '';
     };
 
+
     $scope.regresar = function() {
-        $state.go('usuarios');
+        $state.go('tiposEventos');
     };
 
     $scope.submit = function() {
@@ -82,41 +65,43 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
         if( !$validate.form('form-validate') )
             return;
 
-        if ( $scope.usuario.vc_password != $scope.usuario.vc_password_re ) {
-            $message.warning('Las constraseñas proporcionadas no son identicas.');
+        if( $scope.tipoEvento.vc_imagenUrl == '' ){
+            $message.warning('No se ha cargado ninguna imagen.');
             return;
         }
 
         $loading.show();
 
         if( !$scope.flags.editar ) {
-            ModelService.add($scope.usuario)
-                .success(function (res) {
-                    $message.success(res.texto);
-                    $state.go('usuarios');
+
+            ModelService.add($scope.tipoEvento)
+                .success(function () {
+                    $message.success('El tipoEvento '+$scope.tipoEvento.vc_nombre+', fue guardado correctamente.');
+                    $state.go('tiposEventos');
                 })
                 .error(function (error) {
                     if(error.texto){
                         $message.warning(error.texto);
                     } else {
-                        $message.warning('El usuario '+$scope.usuario.vc_nombre+', no se pudo agregar correctamente.');
+                        $message.warning('El tipoEvento '+$scope.tipoEvento.vc_nombre+', no se pudo agregar correctamente.');
                     }
                 })
                 .finally(function(){
                     $loading.hide();
                 });
         } else {
-            ModelService.update($scope.usuario)
-                .success(function (res) {
-                    $message.success(res.texto);
+
+            ModelService.update($scope.tipoEvento)
+                .success(function () {
+                    $message.success('El tipoEvento '+$scope.tipoEvento.vc_nombre+', fue editado correctamente.');
                     $loading.hide();
-                    $state.go('usuarios');
+                    $state.go('tiposEventos');
                 })
                 .error(function (error) {
                     if(error.texto){
                         $message.warning(error.texto);
                     } else {
-                        $message.warning('El usuario '+$scope.usuario.vc_nombre+', no se pudo editar correctamente.');
+                        $message.warning('El tipoEvento '+$scope.tipoEvento.vc_nombre+', no se pudo editar correctamente.');
                     }
                 })
                 .finally(function(){
@@ -128,29 +113,22 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
     $scope.init = function(){
 
         // Definir Modelo
-        ModelService.addModel('usuarios');
+        ModelService.addModel('tiposEventos');
 
         $loading.show();
 
         ModelService.create()
             .success(function(res){
-
-                $scope.generos  = angular.copy(res.generos);
-                $scope.roles    = angular.copy(res.roles);
-
                 // Verificar proceso Agregar o Editar
                 $util.stateParams(function(){
 
                     $scope.flags.editar = true;
 
-                    console.log($stateParams);
-
                     ModelService.edit( $stateParams.id )
                         .success(function(res){
-                            $scope.usuario                = res;
-                            $scope.usuario.id_genero      = String($scope.usuario.id_genero);
-                            $scope.usuario.id_rol         = String($scope.usuario.id_rol);
-                            $scope.usuario.vc_password_re = angular.copy($scope.usuario.vc_password);
+                            $scope.tipoEvento                = res;
+                            $scope.tipoEvento.vc_nombre      = res.detalle.vc_nombre;
+                            $scope.tipoEvento.vc_imagenUrl   = res.detalle.vc_imagenUrl;
                         })
                         .error(function (error) {
                             if(error.texto){

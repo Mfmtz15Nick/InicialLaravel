@@ -23,6 +23,8 @@ class UsuariosController extends Controller
 {
 	const SISTEMA 				= 1;
 	const ADMINISTRADOR 	= 2;
+	const AUXILIAR 				= 3;
+	const CONSULTOR	 			= 4;
 	const ACTIVO 					= 1;
 	const INACTIVO 				= 0;
 	const DATOSXPAGINA 		= 10;
@@ -66,15 +68,15 @@ class UsuariosController extends Controller
 						->join('usuariosRoles as UR', 'usuarios.id', '=', 'UR.id_usuario')
 						->join('roles as R', 'UR.id_rol', '=', 'R.id')
 						->where([
-								['usuarios.sn_activo',    self::ACTIVO],
-								['usuarios.sn_eliminado', self::INACTIVO],
+								['usuarios.sn_activo',    	self::ACTIVO],
+								['usuarios.sn_eliminado', 	self::INACTIVO],
 								['UD.sn_activo',      	 	self::ACTIVO],
 								['UD.sn_eliminado',   	 	self::INACTIVO],
 								['UR.sn_activo',      	 	self::ACTIVO],
 								['UR.sn_eliminado',   	 	self::INACTIVO],
-								['R.sn_activo',      	 		self::ACTIVO],
-								['R.sn_eliminado',   	 		self::INACTIVO],
-								['R.id',   	 							'!=', self::SISTEMA]
+								['R.sn_activo',      	 	self::ACTIVO],
+								['R.sn_eliminado',   	 	self::INACTIVO],
+								['R.id',   	'!=', 			self::SISTEMA]
 						])
 						->whereNull('usuarios.dt_eliminado')
 						->whereNull('UD.dt_eliminado')
@@ -139,7 +141,7 @@ class UsuariosController extends Controller
         'vc_apellido'    		=> 'required',
         'vc_email'       		=> 'required',
         'vc_password'    		=> 'required',
-        'vc_password_re'        => 'required'
+        'vc_password_re'    	=> 'required'
     ]);
 
     if ($validator->fails()) {
@@ -151,9 +153,7 @@ class UsuariosController extends Controller
         return Response::json(['texto' => 'Las contraseñas proporcionadas no son identicas.'], 418);
 		}
 
-		$tmp_imagen 	= [];
-		$ext 					= [];
-		$folder     	= 'images/usuarios/';
+		
 
     try
     {
@@ -186,19 +186,7 @@ class UsuariosController extends Controller
         		'vc_password' => $body->vc_password,
         		'id_creador' 	=> $body->usuario->id
         	]);
-					// --------------- GUARDAR LA IMAGEN ---------------
-					// Primera Imagen
-					$tmp_imagen = public_path( $folder . $body->vc_imagen);
-					$ext = pathinfo( $tmp_imagen, PATHINFO_EXTENSION);
-					$vc_imagen = 'Imagen_U_'. $usuario->id .'_'. Carbon::now()->timestamp .'.'. $ext;
-
-					copy( $tmp_imagen, public_path( $folder . $vc_imagen ) );
-					unlink($tmp_imagen);
-
-					$usuarioDetalle->vc_imagen 			= $vc_imagen;
-					$usuarioDetalle->vc_imagenUrl 	= $folder . $vc_imagen;
-					$usuarioDetalle->save();
-					// -------------------------------------------------
+				
         }
 
         DB::commit();
@@ -291,9 +279,6 @@ class UsuariosController extends Controller
         return Response::json(['texto' => 'Las contraseñas proporcionadas no son identicas.'], 418);
     }
 
-		$tmp_imagen 	= [];
-		$ext 					= [];
-		$folder     	= 'images/usuarios/';
 
     try
     {
@@ -321,29 +306,6 @@ class UsuariosController extends Controller
           		'id_creador'			=> $body->usuario->id
 						]);
 
-						if ($body->vc_imagen != $usuarioDetalleEliminar->vc_imagen ) {
-							// --------------- GUARDAR LA IMAGEN ---------------
-							// Primera Imagen
-							$tmp_imagen = public_path( $folder . $body->vc_imagen);
-							$ext = pathinfo( $tmp_imagen, PATHINFO_EXTENSION);
-							$vc_imagen = 'Imagen_U_'. $id .'_'. Carbon::now()->timestamp .'.'. $ext;
-
-							copy( $tmp_imagen, public_path( $folder . $vc_imagen ) );
-							unlink($tmp_imagen);
-
-							$usuarioDetalle->vc_imagen 			= $vc_imagen;
-							$usuarioDetalle->vc_imagenUrl 	= $folder . $vc_imagen;
-							// Eliminamos la imagen anterior
-							if ($usuarioDetalleEliminar->vc_imagen) {
-								$imagen_anterior = public_path( $folder . $usuarioDetalleEliminar->vc_imagen);
-								unlink($imagen_anterior);
-							}
-							// -------------------------------------------------
-						}
-						else {
-							$usuarioDetalle->vc_imagen 			= $usuarioDetalleEliminar->vc_imagen;
-							$usuarioDetalle->vc_imagenUrl 	= $usuarioDetalleEliminar->vc_imagenUrl;
-						}
 						$usuarioDetalle->save();
         }
 
@@ -431,11 +393,6 @@ class UsuariosController extends Controller
 		 */
 			public function buscarByNombreOrApellidoOrIdRol($nombre, $idRol = null)
 			{
-
-				Log::info([
-					'$nombre' => $nombre,
-					'$idRol' 	=> $idRol
-				]);
 
 				// Verificación para el uso del Controllador
 				$body = (Object)Request::all();

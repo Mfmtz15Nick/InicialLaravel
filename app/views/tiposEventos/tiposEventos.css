@@ -1,0 +1,42 @@
+/*
+|==========================================================================
+| Geeklopers - Document CSS
+|==========================================================================
+|
+| - CSS de la Vista de tiposEventos
+|
+*/
+
+.tiposEventos {}
+
+/* Tooltip container */
+.tiposEventos .tooltip { position: relative; display: inline-block; font-size: 14px; }
+.tiposEventos .tooltip .tooltiptext { visibility: hidden; width: 70px; background-color: black; color: #fff; text-align: center; padding: 5px 0; border-radius: 6px; left: -45px; position: absolute; z-index: 1; }
+.tiposEventos .tooltip:hover .tooltiptext { visibility: visible; }
+
+/* Large desktops and laptops */
+@media (min-width: 1600px) {
+	/*body { border: 2px solid brown;}/**/
+}
+/* Large desktops and laptops */
+@media (min-width: 1200px) and (max-width: 1599px) {
+	/*body { border: 2px solid yellow;}/**/
+}
+/* Portrait tablets and medium desktops */
+@media (min-width: 992px) and (max-width: 1199px) {
+	/*body { border: 2px solid green;}/**/
+}
+/* Portrait tablets and small desktops */
+@media (min-width: 768px) and (max-width: 991px) {
+	/*body { border: 2px solid cyan;}/**/
+}
+@media (max-width: 991px){
+}
+/* Landscape phones and portrait tablets */
+@media (max-width: 767px) {
+	/*body { border: 2px solid orange;}/**/
+}
+/* Landscape phones and smaller */
+@media (max-width: 480px) {
+	/*body { border: 2px solid red;}/**/
+}
