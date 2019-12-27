@@ -188,7 +188,7 @@ class TiposEventosController extends Controller
         $ext 			      = [];
         $tmp_imagenEng 	= [];
         $extEng 		    = [];
-        $folder     	  = 'images/tiposEventos/';
+        $folder     	  = 'images/clientes/';
 
         try {
             DB::beginTransaction();

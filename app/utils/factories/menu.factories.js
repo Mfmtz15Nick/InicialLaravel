@@ -36,6 +36,11 @@
                             { state: 'clientes', url: 'clientes', file: 'clientes', ext: 'html' },
                             { state: 'clientesNuevo', url: 'clientes/nuevo', file: 'clientesNuevo', ext: 'html' },
                             { state: 'clientesEditar', url: 'clientes/:id/editar', file: 'clientesNuevo', ext: 'html' },
+                        
+                        // Eventos
+                            { state: 'eventos', url: 'eventos', file: 'eventos', ext: 'html' },
+                            { state: 'eventosNuevo', url: 'eventos/nuevo', file: 'eventosNuevo', ext: 'html' },
+                            { state: 'eventosEditar', url: 'eventos/:id/editar', file: 'eventosNuevo', ext: 'html' },
 
                     ],
                     navigation : {
@@ -45,6 +50,7 @@
                                 { name: 'Usuarios', url: '#/usuarios', icon: 'ti-user', title: 0 },
                                 { name: 'Tipos Eventos', url: '#/tiposEventos', icon: 'ti-star', title: 0 },
                                 { name: 'Clientes', url: '#/clientes', icon: 'ti-crown', title: 0 },
+                                { name: 'Eventos', url: '#/eventos', icon: 'ti-pin', title: 0 },
                         ],
                         header: [
                             { name: 'Mi perfil', url: '#/perfil', icon: 'ti-user', title: 1 },

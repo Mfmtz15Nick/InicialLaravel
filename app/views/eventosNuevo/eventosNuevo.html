@@ -1,0 +1,90 @@
+<!--
+|==========================================================================
+| Geeklopers - Document HTML
+|==========================================================================
+|
+| - Vista de eventosNuevo
+|
+-->
+
+<div class="view eventosNuevo" ng-controller="eventosNuevoController">
+
+	<div class="container-fluid">
+		<div class="row header">
+			<div class="col-sm-8 ccs-title">
+				<h2>eventos</h2>
+				<ul>
+					<li><span><a href="#/inicio">Inicio</a></span></li>
+					<li><span> / <a href="#/eventos">eventos</a></span></li>
+					<li>
+						<span ng-show="!flags.editar"> / Nuevo</span>
+						<span ng-show="flags.editar"> / Editar</span>
+					</li>
+				</ul>
+			</div>
+			<div class="col-sm-4 ccs-buttons">
+				<button class="btn btn-info" ng-click="regresar()">
+					<i class="fa fa-arrow-left fa-fw"></i> Regresar
+				</button>
+				<button class="btn btn-success" ng-click="guardar()">
+					<i class="fa fa-hdd-o fa-fw"></i> <span ng-if="!flags.editar">Guardar</span><span ng-if="flags.editar">Actualizar</span>
+				</button>
+			</div>
+		</div>
+
+		<div class="row section">
+			<div class="col-xs-12">
+				<div class="panel ccs-panel">
+					<div class="panel-heading">
+						<h5>Formulario</h5>
+					</div>
+					<div class="panel-body">
+						<form onSubmit="return false;" ng-submit="guardar()" class="form-validate form-horizontal bordered-row">
+							<div class="form-group">
+  	                    <label class="col-sm-3 control-label">Nombre</label>
+  	                    <div class="col-sm-6">
+  	                        <input type="text" class="form-control required" ng-model="evento.vc_nombre" placeholder="">
+  	                    </div>
+  	                </div>
+
+              <div class="form-group">
+                          <label class="col-sm-3 control-label">Agenda</label>
+                          <div class="col-sm-6">
+                  <select class="form-control required" ng-model="evento.id_agenda" ng-disabled="flags.editar">
+                    <option value="">Seleccionar agenda...</option>
+                    <option ng-repeat ="agenda in agendas" value="[[ agenda.id ]]">[[ agenda.vc_nombre ]]</option>
+                  </select>
+                          </div>
+                      </div>
+
+
+                      <div class="form-group">
+                          <label class="col-sm-3 control-label">Fecha</label>
+                          <div class="col-sm-6">
+                              <input type="date" class="form-control required" ng-model="evento.dt_fecha" placeholder="">
+                          </div>
+                      </div>
+
+
+                      <div class="form-group">
+                          <label class="col-sm-3 control-label">Hora</label>
+                          <div class="col-sm-6">
+                              <input type="time" class="form-control required" ng-model="evento.tm_evento" placeholder="">
+                          </div>
+                      </div>
+
+                <div class="form-group">
+                	<div class="content-box text-center">
+                    	<button class="btn btn-success">
+  												<i class="fa fa-hdd-o fa-fw"></i> <span ng-if="!flags.editar">Guardar</span><span ng-if="flags.editar">Actualizar</span>
+                    	</button>
+                	</div>
+                </div>
+            </form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>

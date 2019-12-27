@@ -18,4 +18,11 @@ use Illuminate\Http\Request;
 	
 // CLIENTES
 	Route::resource('clientes', 'ClientesController');
+
+// EVENTOS
+	Route::resource('eventos', 'EventosController');
+	Route::get('eventos/{id}/imagenes','EventosController@imagenesById');
+	Route::post('eventos/upload','EventosController@upload');
+	Route::delete('eventos/eliminarImagen/{vcImagen}','EventosController@eliminarImagen');
+	Route::post('eventos/{id}/imagenes','EventosController@imagenesStore');
 	
