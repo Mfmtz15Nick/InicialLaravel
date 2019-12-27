@@ -47,7 +47,7 @@ class JWTGeekMiddleware extends BaseMiddleware
 
             // Verificar el tipo de Token administrativo o cliente
             if (isset($claims['key'])) {
-                if ($claims['key'] != env('APP_KEY', 'base64:75AuRXSkz6uzmfK3yTCZcV/INZSRUaEF01QurB63QKs=') || !isset($claims['rol']) || ($claims['rol'] != 2 && $claims['rol'] != 6)) {
+                if ($claims['key'] != env('APP_KEY', 'base64:75AuRXSkz6uzmfK3yTCZcV/INZSRUaEF01QurB63QKs=') || !isset($claims['rol']) || ($claims['rol'] != 2 && $claims['rol'] != 3 && $claims['rol'] != 4)) {
                     return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 401);
                 }
             } else {

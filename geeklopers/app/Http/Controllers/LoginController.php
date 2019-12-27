@@ -20,6 +20,9 @@ use App\Models\UsuariosTokens;
 
 class LoginController extends Controller
 {
+    const ADMINISTRADOR 	    = 2;
+	const AUXILIAR   		    = 3;
+	const CONSULTOR	 			= 4;
     /**
 	 * Metodo para Generar un Inicio de Sesión.
 	 *
@@ -56,7 +59,7 @@ class LoginController extends Controller
 
                     // Verificar los privilegios del rol
                     $rol = $usuario->rol->id_rol;
-                    if ( $rol != 2 && $rol != 4) {
+                    if ( $rol != self::ADMINISTRADOR && $rol != self::AUXILIAR && $rol != self::CONSULTOR) {
                         return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
                     }
 

@@ -45,11 +45,14 @@ admin.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$interpo
 admin.run( [ '$rootScope', '$state', '$location', '$util', '$menu', '$authentication',
 	function( $rootScope, $state, $location, $util, $menu, $authentication ){
 
-		let ADMINISTRADOR = 2;
+		let ADMINISTRADOR 	= 2;
+		let AUXILIAR 		= 3;
 		let CONSULTOR	 	= 4;
 		// Request User
         $authentication.check( function( res ){
-	    	if( !res || ($authentication.usuario.rol.id != ADMINISTRADOR )  ){
+			console.log(res);
+			$rol = $authentication.usuario.rol.id;
+	    	if( !res || ( $rol != ADMINISTRADOR ) && ( $rol != AUXILIAR ) && ( $rol != CONSULTOR )  ){
 				console.log('directo a login');
 	    		// window.location.href = 'login';
 	    	} else {
@@ -64,10 +67,21 @@ admin.run( [ '$rootScope', '$state', '$location', '$util', '$menu', '$authentica
 		// INIT
 	    var init = function(){
 
+			console.log($rootScope.usuario.rol.id);
             switch( $rootScope.usuario.rol.id ){
                 case ADMINISTRADOR : // Adminstrador
                     states = [].concat.call( $menu.general, $menu.admin.states );
                     $rootScope.usuario.menu = [].concat.call( $menu.admin.navigation );
+				break;
+				case AUXILIAR : // AUXILIAR
+					console.log('Entre');
+                    states = [].concat.call( $menu.general, $menu.auxiliar.states );
+                    $rootScope.usuario.menu = [].concat.call( $menu.auxiliar.navigation );
+				break;
+				case CONSULTOR : // AUXILIAR
+					console.log('Entre');
+                    states = [].concat.call( $menu.general, $menu.consultor.states );
+                    $rootScope.usuario.menu = [].concat.call( $menu.consultor.navigation );
                 break;
             }
             var url = $location.path().replace('/', ''),
