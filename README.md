@@ -1,10 +1,10 @@
-# GL_Curso
+# GL_Curso2
 
-GL - Curso
+GL - Curso2
 
 ### What is this repository for? ###
 
-* GL_Curso
+* GL_Curso2
 
 ### How do I get set up? ###
 
@@ -13,7 +13,7 @@ GL - Curso
 * "bower install" dentro de la carpeta del proyecto.
 * Encender Apache y MySql
 * Importar la base de datos ubicada en geeklopers->database->database.sql
-* Ir al navegador ingresando la ruta http://localhost/gl_curso
+* Ir al navegador ingresando la ruta http://localhost/gl_curso2
 
 ### Contribution guidelines ###
 
@@ -23,4 +23,3 @@ GL - Curso
 
 ### Who do I talk to? ###
 
-* Giovanni Manjarrez Montelongo - gmontelongo@geeklopers.com
