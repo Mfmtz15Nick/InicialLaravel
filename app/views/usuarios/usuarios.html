@@ -23,7 +23,7 @@
 					<span ng-if="!cargando"><i class="fa fa-refresh fa-fw"></i> Actualizar</span>
 					<span ng-if="cargando"><i class="fa fa-refresh fa-fw"></i> Cargando...</span>
 				</button>
-				<button class="btn btn-success" ng-click="agregar()"><i class="fa fa-plus fa-fw"></i> Crear nuevo</button>
+				<button ng-if="!consultor" class="btn btn-success"  ng-click="agregar()"><i class="fa fa-plus fa-fw"></i> Crear nuevo</button>
 			</div>
 		</div>
 		<div class="row tools-default">
@@ -70,7 +70,7 @@
 										<td>[[ usuario.vc_apellido ]]</td>
 										<td>[[ usuario.vc_email ]]</td>
 										<td>[[ usuario.vc_nombreRol ]]</td>
-										<td>
+										<td ng-if="!consultor">
 											<a ng-click = "editar(usuario)" class="tooltip" >
 												<i class="fa fa-pencil fa-fw"></i>
 												<span class="tooltiptext">Editar</span>

@@ -17,6 +17,7 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     $scope.usuarios               = [];
     $scope.usuariosPaginados      = [];
     $scope.cargando               = false;
+    $scope.consultor              = false;
     $scope.anteriorUrl            = null;
     $scope.siguienteUrl           = null;
     $scope.paginaActual           = 0;
@@ -29,7 +30,6 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
     $scope.siguienteUrl           = null;
     $scope.paginaActual           = 0;
     $scope.buscar                 = "";
-    $scope.cargando               = false;
     $scope.minimoBusqueda         = 3;
     $scope.total                  = 0;
     $scope.totalMostrarPaginado   = 2;
@@ -125,7 +125,7 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
 
         ModelService.custom('get', urlConsulta)
           .success(function(res){
-            console.log(res)
+            //console.log(res)
 
               $scope.usuarios           = res.usuarios.data;
               $scope.usuariosPaginados  = res.usuarios.data;
@@ -204,6 +204,9 @@ app.controller( 'usuariosController', ['$scope', '$rootScope', '$state', '$state
                 $scope.anteriorUrl        = res.usuarios.prev_page_url;
                 $scope.siguienteUrl       = res.usuarios.next_page_url;
                 $scope.paginaActual       = res.usuarios.current_page;
+                $rol = $scope.usuario.rol.id;
+                if($rol == 4)
+                    $scope.consultor = true;
             })
             .error(function () {
                 $message.warning("No se obtener los registros.");

@@ -108,6 +108,10 @@ app.controller( 'clientesNuevoController', ['$scope', '$rootScope', '$state', '$
     };
 
     $scope.init = function(){
+        $rol = $rootScope.usuario.rol.id;
+        console.log($rol)
+        if($rol == 4)
+            window.location.href = 'admin';
 
         // Definir Modelo
         ModelService.addModel('clientes');

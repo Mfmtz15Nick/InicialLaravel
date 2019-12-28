@@ -17,6 +17,7 @@ app.controller( 'clientesController', ['$scope', '$rootScope', '$state', '$state
     $scope.clientes               = [];
     $scope.clientesPaginados      = [];
     $scope.cargando               = false;
+    $scope.consultor              = false;
     $scope.anteriorUrl            = null;
     $scope.siguienteUrl           = null;
     $scope.paginaActual           = 0;
@@ -197,7 +198,11 @@ app.controller( 'clientesController', ['$scope', '$rootScope', '$state', '$state
 
         ModelService.list()
             .success(function( res ){
-            $scope.clientes           = res;
+                $rol = $scope.usuario.rol.id;
+                if($rol == 4)
+                    $scope.consultor = true;
+
+                $scope.clientes           = res;
         })
             .error(function () {
                 $message.warning("No se obtener los registros.");

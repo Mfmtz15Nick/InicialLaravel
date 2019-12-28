@@ -50,7 +50,7 @@ admin.run( [ '$rootScope', '$state', '$location', '$util', '$menu', '$authentica
 		let CONSULTOR	 	= 4;
 		// Request User
         $authentication.check( function( res ){
-			console.log(res);
+			
 			$rol = $authentication.usuario.rol.id;
 	    	if( !res || ( $rol != ADMINISTRADOR ) && ( $rol != AUXILIAR ) && ( $rol != CONSULTOR )  ){
 				console.log('directo a login');
@@ -67,7 +67,6 @@ admin.run( [ '$rootScope', '$state', '$location', '$util', '$menu', '$authentica
 		// INIT
 	    var init = function(){
 
-			console.log($rootScope.usuario.rol.id);
             switch( $rootScope.usuario.rol.id ){
                 case ADMINISTRADOR : // Adminstrador
                     states = [].concat.call( $menu.general, $menu.admin.states );

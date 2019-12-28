@@ -34,6 +34,7 @@ app.controller( 'tiposEventosController', ['$scope', '$rootScope', '$state', '$s
     $scope.total                  = 0;
     $scope.totalMostrarPaginado   = 2;
     $scope.SISTEMA                = 1;
+    $scope.consultor              = false;
 
     var urlConsulta;
 
@@ -177,7 +178,7 @@ app.controller( 'tiposEventosController', ['$scope', '$rootScope', '$state', '$s
     };
 
     $scope.init = function() {
-
+       
         ModelService.addModel('tiposEventos');
 
         $scope.cargando   = true;
@@ -190,6 +191,9 @@ app.controller( 'tiposEventosController', ['$scope', '$rootScope', '$state', '$s
                 $scope.anteriorUrl        = res.prev_page_url;
                 $scope.siguienteUrl       = res.next_page_url;
                 $scope.paginaActual       = res.current_page;
+                $rol = $scope.usuario.rol.id;
+                if($rol == 4)
+                    $scope.consultor = true;
             })
             .error(function () {
                 $message.warning("No se obtener los registros.");

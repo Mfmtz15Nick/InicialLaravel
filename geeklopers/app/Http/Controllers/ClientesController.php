@@ -19,6 +19,8 @@ use Carbon\Carbon;
 class ClientesController extends Controller
 {
     const ADMINISTRADOR = 2;
+    const AUXILIAR      = 3;
+    const CONSULTOR     = 4;
     const ACTIVO        = 1;
     const INACTIVO      = 0;
 
@@ -30,7 +32,8 @@ class ClientesController extends Controller
         }
 
         // Validar acceso permitido por Roles
-        if ($usuario->rol->id_rol != self::ADMINISTRADOR) {
+        $rol = $usuario->rol->id_rol;
+        if ( $rol != self::ADMINISTRADOR && $rol != self::AUXILIAR && $rol != self::CONSULTOR ) {
             return false;
         }
 

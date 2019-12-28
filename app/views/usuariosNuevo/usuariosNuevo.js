@@ -126,6 +126,9 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
     };
 
     $scope.init = function(){
+        $rol = $rootScope.usuario.rol.id;
+        if($rol == 4)
+            window.location.href = 'admin';
 
         // Definir Modelo
         ModelService.addModel('usuarios');
@@ -142,8 +145,6 @@ app.controller( 'usuariosNuevoController', ['$scope', '$rootScope', '$state', '$
                 $util.stateParams(function(){
 
                     $scope.flags.editar = true;
-
-                    console.log($stateParams);
 
                     ModelService.edit( $stateParams.id )
                         .success(function(res){

@@ -19,6 +19,8 @@ use Carbon\Carbon;
 class TiposEventosController extends Controller
 {
     const ADMINISTRADOR = 2;
+    const AUXILIAR      = 3;
+    const CONSULTOR     = 4;
     const ACTIVO        = 1;
     const INACTIVO      = 0;
 
@@ -30,7 +32,8 @@ class TiposEventosController extends Controller
         }
 
         // Validar acceso permitido por Roles
-        if ($usuario->rol->id_rol != self::ADMINISTRADOR) {
+        $rol = $usuario->rol->id_rol;
+        if ( $rol != self::ADMINISTRADOR && $rol != self::CONSULTOR && $rol != self::ADMINISTRADOR ) {
             return false;
         }
 

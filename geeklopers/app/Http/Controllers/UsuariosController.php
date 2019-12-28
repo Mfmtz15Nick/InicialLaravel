@@ -42,7 +42,8 @@ class UsuariosController extends Controller
     }
 
 		// Validar acceso permitido por Roles
-		if ( $usuario->rol->id_rol != self::ADMINISTRADOR ) {
+		$rol = $usuario->rol->id_rol;
+		if ( $rol != self::ADMINISTRADOR && $rol != self::CONSULTOR ) {
         return false;
 		}
 
