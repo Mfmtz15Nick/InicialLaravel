@@ -246,9 +246,7 @@ class TiposEventosController extends Controller
         try {
             DB::beginTransaction();
 
-            if( ProyectosDetalles::Filtro()->where('id_cliente', $id)->exists() )
-              throw new Exception("Existen proyectos asigandos a esta categoria.",418);
-
+           
             $tipoEvento  = TiposEventos::Filtro()->findOrFail($id);
             $tipoEvento->sn_activo          = self::INACTIVO;
             $tipoEvento->sn_eliminado       = self::ACTIVO;

@@ -205,6 +205,71 @@ SET FOREIGN_KEY_CHECKS=0;
       REFERENCES clientes ( id )
   )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
+  /* Tabla de eventos */
+  DROP TABLE IF EXISTS eventos;
+  CREATE TABLE eventos(
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+
+    sn_activo TINYINT NOT NULL DEFAULT 1,
+    sn_eliminado TINYINT NOT NULL DEFAULT 0,
+    dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    dt_eliminado TIMESTAMP NULL,
+    id_creador INT UNSIGNED NOT NULL,
+
+    PRIMARY KEY( id )
+
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+/* Tabla de eventosDetalles */
+  DROP TABLE IF EXISTS eventosDetalles;
+  CREATE TABLE eventosDetalles(
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+
+    vc_nombre VARCHAR(50) NOT NULL,
+    id_evento INT UNSIGNED NOT NULL,
+    id_tiposEventos INT UNSIGNED NOT NULL,
+    
+
+    sn_activo TINYINT NOT NULL DEFAULT 1,
+    sn_eliminado TINYINT NOT NULL DEFAULT 0,
+    dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    dt_eliminado TIMESTAMP NULL,
+    id_creador INT UNSIGNED NOT NULL,
+
+    PRIMARY KEY( id ),
+
+    CONSTRAINT FK_eventosDetalles_eventos FOREIGN KEY( id_evento )
+    REFERENCES eventos ( id ),
+
+    CONSTRAINT FK_eventosDetalles_TiposEventos FOREIGN KEY( id_tiposEventos )
+    REFERENCES tiposEventos ( id )
+
+  )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+
+  /* Tabla de eventosImagenes */
+  DROP TABLE IF EXISTS eventosImagenes;
+  CREATE TABLE eventosImagenes(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  id_evento INT UNSIGNED NOT NULL,
+  nu_posicion SMALLINT(6) NOT NULL,
+
+  vc_imagen VARCHAR(100) NOT NULL,
+  vc_imagenUrl TEXT NOT NULL,
+
+  sn_activo TINYINT NOT NULL DEFAULT 1,
+  sn_eliminado TINYINT NOT NULL DEFAULT 0,
+  dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  dt_eliminado TIMESTAMP NULL,
+  id_creador INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY( id ),
+  CONSTRAINT FK_eventosImagenes_eventos FOREIGN KEY( id_evento ) REFERENCES eventos ( id )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
 
 
 -- INSERT

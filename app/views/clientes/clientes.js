@@ -164,11 +164,12 @@ app.controller( 'clientesController', ['$scope', '$rootScope', '$state', '$state
     };
 
     $scope.eliminar = function( cliente ) {
+        console.log(cliente)
         $message.confirm({
             text    : '¿Estás seguro de eliminar el clientes '+cliente.vc_nombre+' '+cliente.vc_apellido+'?',
             callback : function( msg ){
                 $loading.show();
-                ModelService.delete( cliente.id )
+                ModelService.delete( cliente.id_cliente )
                     .success(function(res){
                         msg.close();
                         var posicion = $util.getPosition($scope.clientes, 'id', cliente.id);

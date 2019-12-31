@@ -208,9 +208,7 @@ class ClientesController extends Controller
         try {
             DB::beginTransaction();
 
-            if( ProyectosDetalles::Filtro()->where('id_cliente', $id)->exists() )
-              throw new Exception("Existen proyectos asigandos a esta categoria.",418);
-
+            
             $cliente  = Clientes::Filtro()->findOrFail($id);
             $cliente->sn_activo          = self::INACTIVO;
             $cliente->sn_eliminado       = self::ACTIVO;

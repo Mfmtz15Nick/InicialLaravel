@@ -21,8 +21,8 @@ use Illuminate\Http\Request;
 
 // EVENTOS
 	Route::resource('eventos', 'EventosController');
-	Route::get('eventos/{id}/imagenes','EventosController@imagenesById');
-	Route::post('eventos/upload','EventosController@upload');
-	Route::delete('eventos/eliminarImagen/{vcImagen}','EventosController@eliminarImagen');
-	Route::post('eventos/{id}/imagenes','EventosController@imagenesStore');
-	
+	Route::post('eventos/upload', 'EventosController@upload');
+	Route::get('eventos/{id}/imagenes', 'EventosController@indexImagenes');
+	Route::post('eventos/{id}/imagenes/store', 'EventosController@storeImagenes');
+	Route::delete('eventos/{id}/imagenes', 'EventosController@destroyImagenes');
+	Route::post('eventos/imagenes/{id}/ordenar','EventosController@ordenarImagenes');

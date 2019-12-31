@@ -12,7 +12,7 @@
 	<div class="container-fluid">
 		<div class="row header">
 			<div class="col-sm-6 ccs-title">
-				<h2>eventos</h2>
+				<h2>Eventos</h2>
 				<ul>
 					<li><span><a href="#/inicio">Inicio</a></span></li>
 					<li><span> / Eventos</span></li>
@@ -30,7 +30,7 @@
 			<div class="col-sm-6 search-default">
 				<div class="input-group">
 					<span class="input-group-addon"><i class="fa fa-search fa-fw"></i></span>
-					<input type="text" class="form-control" placeholder="Buscar eventos..." ng-model="buscar" ng-change="buscareventos()">
+					<input type="text" class="form-control" placeholder="Buscar eventos" ng-model="filter">
 				</div>
 			</div>
 		</div>
@@ -46,23 +46,36 @@
 						<div class="table-responsive">
 							<table class="table">
 								<thead>
-									<th width="30"><i class="ti-star"></i></th>
-									<th>Nombre</th>
-                  <th>Agenda</th>
-									<th>Fecha</th>
-									<th width="150"></th>
+									<th width="30"><i class="ti-medall"></i></th>
+									<th>Evento</th>
+									<th>Tipo de Evento</th>
+									<th></th>
+									<!-- <th>Destacado</th> -->
+									<th width="61"></th>
+									<th width="61"></th>
+									<th width="61"></th>
 								</thead>
 								<tbody>
-									<tr ng-repeat="evento in eventos">
-										<td><i class="ti-star"></i></td>
-										<td>[[ evento.vc_nombre ]]</td>
-                    <td>[[ evento.agenda.vc_nombre ]]</td>
-                    <td>[[ evento.dt_fecha | date ]]</td>
+									<tr ng-repeat="evento in eventos | filter: filter">
+										<td><i class="ti-medall"></i></td>
+										<td>[[ evento.detalle.vc_nombre ]]</td>
+										<td>[[ evento.detalle.tipos_eventos.vc_nombre ]]</td>
+										<td> </td>
+										<!-- <td ng-if="evento.detalle.sn_destacado == 0">NO</td>
+										<td ng-if="evento.detalle.sn_destacado == 1">SI</td> -->
+										<td>
+											<a ng-click = "galeria(evento)" class="tooltip">
+												<i class="fa fa-image fa-fw"></i>
+													<span class="tooltiptext">Galería</span>
+											</a>
+										</td>
 										<td>
 											<a ng-click = "editar(evento)" class="tooltip" >
 												<i class="fa fa-pencil fa-fw"></i>
 												<span class="tooltiptext">Editar</span>
 											</a>
+										</td>
+										<td>
 											<a ng-click = "eliminar(evento)" class="tooltip" >
 												<i class="fa fa-trash fa-fw"></i>
 												<span class="tooltiptext">Eliminar</span>
@@ -74,7 +87,7 @@
 						</div>
 					</div>
 				</div>
-					<nav aria-label="Paginador de eventos" class="text-center" ng-hide="total < totalMostrarPaginado">
+					<!-- <nav aria-label="Paginador de eventos" class="text-center" ng-hide="total < totalMostrarPaginado">
 						<ul class="pagination">
 							<li class="page-item" ng-hide="anteriorUrl == null">
 							<a class="page-link previous" nohref ng-click="cambiarPagina(anteriorUrl)" aria-label="Previous">
@@ -104,7 +117,7 @@
 								</a>
 							  </li>
 							</ul>
-						  </nav>
+						  </nav> -->
 			</div>
 		</div>
 	</div>

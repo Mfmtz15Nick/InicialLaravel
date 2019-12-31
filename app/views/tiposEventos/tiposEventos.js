@@ -152,11 +152,12 @@ app.controller( 'tiposEventosController', ['$scope', '$rootScope', '$state', '$s
     };
 
     $scope.eliminar = function( tiposEventos ) {
+        console.log(tiposEventos)
         $message.confirm({
             text    : '¿Estás seguro de eliminar el tiposEventos '+tiposEventos.vc_nombre+'?',
             callback : function( msg ){
                 $loading.show();
-                ModelService.delete( tiposEventos.id )
+                ModelService.delete( tiposEventos.id_tiposEventos )
                     .success(function(res){
                         msg.close();
                         var posicion = $util.getPosition($scope.tiposEventos, 'id', tiposEventos.id);
