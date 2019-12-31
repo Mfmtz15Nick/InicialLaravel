@@ -41,6 +41,7 @@
                             { state: 'eventos', url: 'eventos', file: 'eventos', ext: 'html' },
                             { state: 'eventosNuevo', url: 'eventos/nuevo', file: 'eventosNuevo', ext: 'html' },
                             { state: 'eventosEditar', url: 'eventos/:id/editar', file: 'eventosNuevo', ext: 'html' },
+                            { state: 'eventosGaleria', url: 'eventos/:id/galeria', file: 'eventosGaleria', ext: 'html' },
 
                     ],
                     navigation : {
@@ -79,6 +80,7 @@
                             { state: 'eventos', url: 'eventos', file: 'eventos', ext: 'html' },
                             { state: 'eventosNuevo', url: 'eventos/nuevo', file: 'eventosNuevo', ext: 'html' },
                             { state: 'eventosEditar', url: 'eventos/:id/editar', file: 'eventosNuevo', ext: 'html' },
+                            { state: 'eventosGaleria', url: 'eventos/:id/galeria', file: 'eventosGaleria', ext: 'html' },
 
                     ],
                     navigation : {

@@ -4,22 +4,22 @@
 |==========================================================================
 |
 |
-| - Vista de proyectosGaleria
+| - Vista de eventosGaleria
 |
 -->
 
-<div class="view proyectosGaleria" ng-controller="proyectosGaleriaController">
+<div class="view eventosGaleria" ng-controller="eventosGaleriaController">
 
    <div class="container-fluid">
       <div class="row header">
          <div class="col-sm-8 ccs-title">
-            <h2>Imágenes del Proyecto</h2>
+            <h2>Imágenes del evento</h2>
             <ul>
                <li><span><a href="#/inicio">Inicio</a></span></li>
-               <li><span> / <a href="#/proyectos">Proyectos</a></span></li>
+               <li><span> / <a href="#/eventos">eventos</a></span></li>
                <li><span> / Imágenes</span></li>
             </ul>
-            <h4>Proyecto: [[ proyecto.detalle.vc_nombre ]]</h4>
+            <h4>evento: [[ evento.detalle.vc_nombre ]]</h4>
          </div>
          <div class="col-sm-4 ccs-buttons">
             <button class="btn btn-info" ng-click="regresar()">
@@ -44,9 +44,9 @@
                            <!-- IMAGENES A SUBIR -->
                            <div class="col-sm-6 img-previo">
                               <div class="row">
-                                 <div class="col-sm-6 text-center"  ng-repeat="proyectos_imagen in temporal" style="margin-bottom: 15px;">
+                                 <div class="col-sm-6 text-center"  ng-repeat="eventos_imagen in temporal" style="margin-bottom: 15px;">
                                     <div style="height: 200px; width: 100%; background-color: #f5f5f5;">
-                                       <img ng-src="images/proyectos/[[proyectos_imagen.vc_imagen]]" alt="" ng-show="proyectos_imagen.vc_imagen" style="max-width: 100%; max-height: 200px;"/>
+                                       <img ng-src="images/clientes/[[eventos_imagen.vc_imagen]]" alt="" ng-show="eventos_imagen.vc_imagen" style="max-width: 100%; max-height: 200px;"/>
                                     </div>
                                  </div>
                               </div>
@@ -115,21 +115,21 @@
          <!-- TITULO -->
          <div class="col-sm-12 ccs-title">
             <h2>Imágenes</h2>
-            <h4 ng-if="proyecto_imagenes.length == 0" class="text-center">No hay imágenes en el album.</h4>
+            <h4 ng-if="evento_imagenes.length == 0" class="text-center">No hay imágenes en el album.</h4>
          </div>
 
          <!-- IMAGENES -->
          <div class="col-sm-12 form-default">
-            <div class="row imagesCollection" as-sortable="acciones" ng-model="proyecto_imagenes">
-               <div class="col-sm-3 columna-imagenes" ng-repeat="proyectos_imagen in proyecto_imagenes" as-sortable-item>
+            <div class="row imagesCollection" as-sortable="acciones" ng-model="evento_imagenes">
+               <div class="col-sm-3 columna-imagenes" ng-repeat="eventos_imagen in evento_imagenes" as-sortable-item>
                   <div class="element"  as-sortable-item-handle>
                      <div class="ilustracion">
-                        <img class="img-responsive" ng-src="images/proyectos/[[proyectos_imagen.vc_imagen]]" alt="">
+                        <img class="img-responsive" ng-src="images/clientes/[[eventos_imagen.vc_imagen]]" alt="">
                      </div>
                      <div class="options">
                         <ul>
                            <li>Orden: [[$index+1]]</li>
-                           <li><a ng-click="eliminar( proyectos_imagen, $index )"><i class="ti-trash"></i></a></li>
+                           <li><a ng-click="eliminar( eventos_imagen, $index )"><i class="ti-trash"></i></a></li>
                         </ul>
                      </div>
                   </div>

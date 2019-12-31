@@ -150,7 +150,7 @@ class EventosController extends Controller
         if (!$this->validateController($body->usuario)) {
             return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
         }
-        return Proyectos::Filtro()->with('detalle')->findOrFail($id);
+        return Eventos::Filtro()->with('detalle')->findOrFail($id);
     }
 
     /**
@@ -170,18 +170,8 @@ class EventosController extends Controller
         }
         // Validacion de parametros
         $validator = Validator::make((array) $body, [
-          'id_categoria'           => 'required',
+          'id_tiposEventos'           => 'required',
           'vc_nombre'              => 'required',
-          'vc_nombreEng'           => 'required',
-          'vc_descripcion'         => 'required',
-          'vc_descripcionEng'      => 'required',
-          'id_estado'              => 'required',
-          'id_ciudad'              => 'required',
-          'id_cliente'             => 'required',
-          'vc_cubierta'            => 'required',
-          'vc_cubiertaEng'         => 'required',
-          'nu_peso'              	 => 'required',
-          'id_medida'              => 'required'
           // 'vc_imagenUrl'           => 'required'
         ]);
 
@@ -193,41 +183,23 @@ class EventosController extends Controller
         $ext 			      = [];
         $tmp_imagenEng 	= [];
         $extEng 		    = [];
-        $folder     	  = 'images/proyectos/';
+        $folder     	  = 'images/clientes/';
 
 
         try {
             DB::beginTransaction();
 
-            if (ProyectosDetalles::Filtro()->where('id', '!=', $id)->where('vc_nombre', $body->vc_nombre)->where('id_categoria', $body->id_categoria)->exists()) {
+            if (EventosDetalles::Filtro()->where('id', '!=', $id)->where('vc_nombre', $body->vc_nombre)->where('id_tiposEventos', $body->id_tiposEventos)->exists()) {
                 throw new Exception("El Proyecto " . $body->vc_nombre . " ya se encuentra registrado.", 418);
             }
 
-            // $sn_destacado = 0;
-            //
-            // if ($body->sn_destacado){
-            //   $sn_destacado = 1;
-            //   if (ProyectosDetalles::Filtro()->where('id', '!=', $id)->where('sn_destacado', $sn_destacado)->where('id_categoria', $body->id_categoria)->exists()) {
-            //       throw new Exception("Existe un proyecto destacado registrado en esta categoria.", 418);
-            //   }
-            // }
+            
 
-            $proyecto  = ProyectosDetalles::Filtro()->findOrFail($id);
-            $proyecto->vc_nombre             = $body->vc_nombre;
-      			$proyecto->vc_nombreEng          = $body->vc_nombreEng;
-      			$proyecto->vc_descripcion        = $body->vc_descripcion;
-      			$proyecto->vc_descripcionEng     = $body->vc_descripcionEng;
-      			$proyecto->id_categoria          = $body->id_categoria;
-            $proyecto->id_estado             = $body->id_estado;
-      			$proyecto->id_ciudad             = $body->id_ciudad;
-      			$proyecto->id_cliente            = $body->id_cliente;
-      			$proyecto->vc_cubierta           = $body->vc_cubierta;
-      			$proyecto->vc_cubiertaEng        = $body->vc_cubiertaEng;
-      			$proyecto->nu_peso               = $body->nu_peso;
-      			$proyecto->id_medida             = $body->id_medida;
-            // $proyecto->vc_imagen             = $body->vc_imagenUrl;
-            // $proyecto->vc_imagenUrl          = $body->vc_imagenUrl;
-            $proyecto->save();
+            $evento  = EventosDetalles::Filtro()->findOrFail($id);
+            $evento->vc_nombre             = $body->vc_nombre;
+      			$evento->id_tiposEventos       = $body->id_tiposEventos;
+            // $evento->vc_imagenUrl          = $body->vc_imagenUrl;
+            $evento->save();
 
             // // --------------- GUARDAR LA IMAGEN ---------------
             // // Primera Imagen
@@ -270,20 +242,20 @@ class EventosController extends Controller
         try {
             DB::beginTransaction();
 
-            $proyecto  = Proyectos::Filtro()->findOrFail($id);
-            $proyecto->sn_activo          = self::INACTIVO;
-            $proyecto->sn_eliminado       = self::ACTIVO;
-            $proyecto->save();
-            $proyecto->delete();
+            $evento  = Eventos::Filtro()->findOrFail($id);
+            $evento->sn_activo          = self::INACTIVO;
+            $evento->sn_eliminado       = self::ACTIVO;
+            $evento->save();
+            $evento->delete();
 
-            $proyectoDetalle  = ProyectosDetalles::Filtro()->where('id_proyecto', $id)->first();
-            $proyectoDetalle->sn_activo          = self::INACTIVO;
-            $proyectoDetalle->sn_eliminado       = self::ACTIVO;
-            $proyectoDetalle->save();
-            $proyectoDetalle->delete();
+            $eventoDetalle  = EventosDetalles::Filtro()->where('id_evento', $id)->first();
+            $eventoDetalle->sn_activo          = self::INACTIVO;
+            $eventoDetalle->sn_eliminado       = self::ACTIVO;
+            $eventoDetalle->save();
+            $eventoDetalle->delete();
 
-            $proyectoImagenes  = ProyectosImagenes::Filtro()->where('id_proyecto', $id)->get();
-            foreach ($proyectoImagenes as $imagenes) {
+            $eventoImagenes  = EventosImagenes::Filtro()->where('id_evento', $id)->get();
+            foreach ($eventoImagenes as $imagenes) {
               $imagenes->sn_activo          = self::INACTIVO;
               $imagenes->sn_eliminado       = self::ACTIVO;
               $imagenes->save();
@@ -291,14 +263,14 @@ class EventosController extends Controller
             }
 
             DB::commit();
-            return ['texto' => 'El Proyecto ' . $proyectoDetalle->vc_nombre . ', fue eliminado.'];
+            return ['texto' => 'El Proyecto ' . $eventoDetalle->vc_nombre . ', fue eliminado.'];
         } catch (Exception $e) {
             DB::rollBack();
             return Response::json(['texto' => $e->getMessage()], 418);
         }
     }
 
-    public function upload()
+   public function upload()
     {
       // Verificación para el uso del Controllador
       $body = (Object)Request::all();
@@ -309,7 +281,7 @@ class EventosController extends Controller
       try {
           $file = Request::file('file');
           $vc_imagen = Carbon::now()->timestamp .'_'. $file->getClientOriginalName();
-          $file->move( public_path('images/proyectos'), $vc_imagen);
+          $file->move( public_path('images/clientes'), $vc_imagen);
 
           return [ 'estatus'   => true, 'nombre' => $vc_imagen];
       }
@@ -327,7 +299,7 @@ class EventosController extends Controller
         return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
       }
 
-      return Proyectos::Filtro()->with('detalle','imagenes')->findOrFail($id);
+      return Eventos::Filtro()->with('detalle','imagenes')->findOrFail($id);
     }
 
     public function storeImagenes($id)
@@ -346,17 +318,17 @@ class EventosController extends Controller
       DB::beginTransaction();
 
       //Guardamos la imagen
-      if(count($body->proyecto_imagenes) > 0) {
+      if(count($body->evento_imagenes) > 0) {
         // Obtenemos la ultima posicion
-        $ultimo   = ProyectosImagenes::where('id_proyecto', $id )->orderBy('nu_posicion', 'DESC')->first(['nu_posicion']);
+        $ultimo   = EventosImagenes::where('id_evento', $id )->orderBy('nu_posicion', 'DESC')->first(['nu_posicion']);
         $nu_orden = is_null( $ultimo ) ? 1 : ( $ultimo->nu_posicion + 1  );
-        $folder   = 'images/proyectos/';
+        $folder   = 'images/clientes/';
 
         // Recorremos las imagenes
-        foreach ($body->proyecto_imagenes as $vc_imagen_temp) {
+        foreach ($body->evento_imagenes as $vc_imagen_temp) {
 
-          $imagen = ProyectosImagenes::create([
-            'id_proyecto'   => $id,
+          $imagen = EventosImagenes::create([
+            'id_evento'   => $id,
             'vc_imagen'		  => '',
             'vc_imagenUrl'	=> '',
             'nu_posicion'	  => $nu_orden,
@@ -366,7 +338,7 @@ class EventosController extends Controller
           $tmp_imagen = public_path( $folder . $vc_imagen_temp);
 
           $ext = pathinfo( $tmp_imagen,PATHINFO_EXTENSION);
-          $vc_imagen = 'Imagen_P_'.$id.'_'. $imagen->id .'_'. Carbon::now()->timestamp .'.'. $ext;
+          $vc_imagen = 'Imagen_E_'.$id.'_'. $imagen->id .'_'. Carbon::now()->timestamp .'.'. $ext;
 
           $imagen->vc_imagen 	  = $vc_imagen;
           $imagen->vc_imagenUrl = $vc_imagen;

@@ -2,31 +2,29 @@
 |==========================================================================
 | Geeklopers - Document JS
 |==========================================================================
-|
-| Kevin Ramírez
-| - Controllador de la Vista de proyectosGaleria
+| - Controllador de la Vista de eventosGaleria
 |
 */
 
-var app = angular.module('proyectosGaleria', ['angularFileUpload','as.sortable']);
+var app = angular.module('eventosGaleria', ['angularFileUpload','as.sortable']);
 
 // Controller
-app.controller( 'proyectosGaleriaController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', '$util', '$message', '$loading', '$validate', 'ModelService', '$uploader', '$http',
+app.controller( 'eventosGaleriaController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', '$util', '$message', '$loading', '$validate', 'ModelService', '$uploader', '$http',
     function( $scope, $rootScope, $state, $stateParams, $location, $util, $message, $loading, $validate, ModelService, $uploader, $http ){
 
     // Scope Variables
-    $scope.proyecto = {};
-    $scope.proyecto_imagenes = [];
+    $scope.evento = {};
+    $scope.evento_imagenes = [];
     $scope.temporal = [];
 
     $scope.editar = { status: false, id: null, imgShow: false };
     $scope.titulo = { plural: "galería", singular: "galería", icono: "ti-layers-alt" };
 
     var uploader = $uploader.load({
-        url : 'api/proyectos/upload',
+        url : 'api/eventos/upload',
         autoUpload: true,
         headers: {
-            Authorization: localStorage.getItem('gjb.token')
+            Authorization: localStorage.getItem('gc.token')
         }
     });
     $scope.uploader = uploader;
@@ -38,7 +36,7 @@ app.controller( 'proyectosGaleriaController', ['$scope', '$rootScope', '$state',
     };
 
     $scope.regresar = function() {
-        $state.go('proyectos');
+        $state.go('eventos');
     };
 
     $scope.deleteItem = function(item, posicion){
@@ -49,10 +47,10 @@ app.controller( 'proyectosGaleriaController', ['$scope', '$rootScope', '$state',
     $scope.acciones = {
         dragEnd : function(){
         //Actualizamos en orden del slider
-        var params = { proyecto_imagenes : [] };
+        var params = { evento_imagenes : [] };
 
-        angular.forEach( $scope.proyecto_imagenes, function( item, index ){
-            params.proyecto_imagenes.push({
+        angular.forEach( $scope.evento_imagenes, function( item, index ){
+            params.evento_imagenes.push({
                 id : item.id,
                 nu_orden : index + 1
             });
@@ -60,7 +58,7 @@ app.controller( 'proyectosGaleriaController', ['$scope', '$rootScope', '$state',
 
         $loading.show();
 
-        $http.post('api/proyectos/imagenes/' + $stateParams.id + '/ordenar', params)
+        $http.post('api/eventos/imagenes/' + $stateParams.id + '/ordenar', params)
             .success(function (res) {
               $message.success(res.texto);
             })
@@ -77,7 +75,7 @@ app.controller( 'proyectosGaleriaController', ['$scope', '$rootScope', '$state',
     $scope.guardar = function(){
 
         if($scope.temporal.length == 0){
-            $message.warning('No se ha cargado ninguna imagen para guardar en los proyectos.');
+            $message.warning('No se ha cargado ninguna imagen para guardar en los eventos.');
             return;
         }
 
@@ -87,21 +85,21 @@ app.controller( 'proyectosGaleriaController', ['$scope', '$rootScope', '$state',
       $loading.show();
 
       var params    = {};
-      var proyecto_imagenes  = angular.copy($scope.proyecto_imagenes);
+      var evento_imagenes  = angular.copy($scope.evento_imagenes);
 
       //Agregamos el nombre de la imagen
-      params.proyecto_imagenes = [];
+      params.evento_imagenes = [];
 
       angular.forEach($scope.temporal, function(item){
-          params.proyecto_imagenes.push(item.vc_imagen);
+          params.evento_imagenes.push(item.vc_imagen);
       });
 
-      $http.post('api/proyectos/'+$stateParams.id+'/imagenes/store', params)
+      $http.post('api/eventos/'+$stateParams.id+'/imagenes/store', params)
         .success(function (res) {
           $message.success(res.texto);
 
-          for(var proyectos_imagen in params.proyecto_imagenes){
-            $scope.temporal.pop(params.proyecto_imagenes[proyectos_imagen]);
+          for(var eventos_imagen in params.evento_imagenes){
+            $scope.temporal.pop(params.evento_imagenes[eventos_imagen]);
           }
 
           uploader.queue = [];
@@ -120,15 +118,15 @@ app.controller( 'proyectosGaleriaController', ['$scope', '$rootScope', '$state',
 
     };
 
-    $scope.eliminar = function( proyecto_imagenes , index) {
+    $scope.eliminar = function( evento_imagenes , index) {
         $message.confirm({
             text    : '¿Estás seguro de eliminar la <b>imágen</b> ?',
             callback : function( msg ){
                 $loading.show();
 
-                $http.delete('api/proyectos/'+proyecto_imagenes.id+'/imagenes')
+                $http.delete('api/eventos/'+evento_imagenes.id+'/imagenes')
                     .success(function(res){
-                        $scope.proyecto_imagenes.splice( index, 1 );
+                        $scope.evento_imagenes.splice( index, 1 );
                         $message.success(res.texto);
                         msg.close();
                         $scope.init();
@@ -149,7 +147,7 @@ app.controller( 'proyectosGaleriaController', ['$scope', '$rootScope', '$state',
 
     $scope.init = function(){
         // Definir Modelo
-        ModelService.addModel('proyectos');
+        ModelService.addModel('eventos');
 
         // Verificar Estatus Agregar o Editar
         $util.stateParams(function(){
@@ -158,10 +156,10 @@ app.controller( 'proyectosGaleriaController', ['$scope', '$rootScope', '$state',
             $scope.editar.status = true;
             $scope.editar.imgShow = true;
 
-            $http.get('api/proyectos/'+$stateParams.id+'/imagenes')
+            $http.get('api/eventos/'+$stateParams.id+'/imagenes')
                 .success(function(res){
-                    $scope.proyecto           = res;
-                    $scope.proyecto_imagenes  = res.imagenes;
+                    $scope.evento           = res;
+                    $scope.evento_imagenes  = res.imagenes;
                     uploader.queueLimit   = 8 - res.imagenes.length;
                 })
                 .error(function (error) {
