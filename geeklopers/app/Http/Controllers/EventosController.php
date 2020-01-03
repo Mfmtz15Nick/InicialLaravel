@@ -172,7 +172,7 @@ class EventosController extends Controller
         $validator = Validator::make((array) $body, [
           'id_tiposEventos'           => 'required',
           'vc_nombre'              => 'required',
-          // 'vc_imagenUrl'           => 'required'
+          
         ]);
 
         if ($validator->fails()) {
@@ -198,24 +198,8 @@ class EventosController extends Controller
             $evento  = EventosDetalles::Filtro()->findOrFail($id);
             $evento->vc_nombre             = $body->vc_nombre;
       			$evento->id_tiposEventos       = $body->id_tiposEventos;
-            // $evento->vc_imagenUrl          = $body->vc_imagenUrl;
+            
             $evento->save();
-
-            // // --------------- GUARDAR LA IMAGEN ---------------
-            // // Primera Imagen
-            // $tmp_imagen = public_path( $folder . $body->vc_imagenUrl);
-            //
-            // $ext = pathinfo( $tmp_imagen,PATHINFO_EXTENSION);
-            // $vc_imagen = 'Imagen_'. $id .'_'. Carbon::now()->timestamp .'.'. $ext;
-            //
-            // copy( $tmp_imagen, public_path( $folder . $vc_imagen ) );
-            // unlink($tmp_imagen);
-            //
-            // $proyecto->vc_imagen    = $vc_imagen;
-            // $proyecto->vc_imagenUrl = $vc_imagen;
-            // $proyecto->save();
-            // // -------------------------------------------------
-
             DB::commit();
             return ['texto' => 'El Proyecto ' . $body->vc_nombre . ', fue actualizado.'];
         } catch (Exception $e) {
@@ -359,7 +343,8 @@ class EventosController extends Controller
         if( $e->getCode() == 999 ) return Response::json(['texto' => $e->getMessage(), 'line' => $e->getLine()],418);
         return Response::json(['message' => $e->getMessage(), 'line' => $e->getLine()],418);
       }
-    }
+		}
+		
 
     public function destroyImagenes($id)
     {
@@ -373,7 +358,7 @@ class EventosController extends Controller
         DB::beginTransaction();
 
         // Eliminar imagen
-        $imagen = ProyectosImagenes::Filtro()->findOrFail($id);
+        $imagen = EventosImagenes::Filtro()->findOrFail($id);
         $imagen->sn_activo          = self::INACTIVO;
         $imagen->sn_eliminado       = self::ACTIVO;
         $imagen->save();
@@ -399,9 +384,9 @@ class EventosController extends Controller
       try {
         DB::beginTransaction();
 
-        foreach ($body->proyecto_imagenes as $item) {
+        foreach ($body->evento_imagenes as $item) {
           $item = (object)$item;
-          $imagen = ProyectosImagenes::Filtro()->findOrFail( $item->id );
+          $imagen = EventosImagenes::Filtro()->findOrFail( $item->id );
           $imagen->nu_posicion = $item->nu_orden;
           $imagen->save();
         }

@@ -163,6 +163,11 @@ app.controller( 'clientesController', ['$scope', '$rootScope', '$state', '$state
         $state.go('clientesEditar', { id : cliente.id });
     };
 
+    $scope.eventos = function( cliente ) {
+        console.log(cliente.id)
+        $state.go('clientesEventos', { id : cliente.id });
+    };
+
     $scope.eliminar = function( cliente ) {
         console.log(cliente)
         $message.confirm({

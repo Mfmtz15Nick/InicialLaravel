@@ -14,6 +14,9 @@ use Request;
 use App\Models\Clientes;
 use App\Models\ClientesDetalles;
 use App\Models\ProyectosDetalles;
+use App\Models\TiposEventosDetalles;
+use App\Models\EventosDetalles;
+use App\Models\ClientesEventos;
 use Carbon\Carbon;
 
 class ClientesController extends Controller
@@ -23,6 +26,9 @@ class ClientesController extends Controller
     const CONSULTOR     = 4;
     const ACTIVO        = 1;
     const INACTIVO      = 0;
+	const DIAS = [ 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo' ];
+	const MESES = [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre' ];
+    
 
     public function validateController($usuario)
     {
@@ -189,6 +195,122 @@ class ClientesController extends Controller
             return Response::json(['texto' => $e->getMessage(), 'linea' => $e->getLine()], 418);
         }
     }
+
+    // METODOS PARA EVENTOS DE LOS CLIENTES
+
+		public function eventos($id){
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+			     return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+            //agendas horarios
+            //clientes eventos
+			// $cliente =  Clientes::Filtro()->with('eventos','detalle','eventos.eventoDetalle')->findOrFail($id);
+			$cliente =  Clientes::Filtro()->with('eventos','detalle','eventos.nombreEvento')->findOrFail($id);
+
+			$eventos = array();
+
+	    return ['cliente' => $cliente, 'eventos' => $eventos];
+
+        }
+        public function eventosNuevo($id){
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+					 return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+            $clientes = Clientes::Filtro()->with('eventos')->findOrFail($id);
+            $tiposEventos = EventosDetalles::Filtro()->get();
+            // return $clientes;
+            return [ 'clientes' => $clientes, 'tiposEventos' => $tiposEventos ];
+        }
+        
+        public function eventosStore($id){
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+					 return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			// Validacion de parametros
+			$validator = Validator::make((array)$body, [
+					'nu_dia'      		=> 'required',
+                    'nu_mes'      		=> 'required',
+					'id_evento'    		=> 'required',
+					'tm_entrada'     	=> 'required',
+					'tm_salida'      	=> 'required'
+			]);
+
+			if ($validator->fails()) {
+					return Response::json(['texto' => 'Asegurese de ingresar los datos necesarios.'], 418);
+			}
+
+			try {
+				DB::beginTransaction();
+
+				$cliente = Clientes::Filtro()->findOrFail($id);
+				// Se crea las horas como Carbon
+			 	$tm_entrada = new Carbon($body->tm_entrada);
+                $tm_salida 	= new Carbon($body->tm_salida);
+                
+				// Se restan 7 horas por la zona horaria
+				$tm_entrada = $tm_entrada->subHours(7);
+				$tm_salida  = $tm_salida->subHours(7);
+				// Se valida si la hora de entrada es menor a la hora de salida
+				if ( $tm_entrada->greaterThanOrEqualTo($tm_salida) ) {
+					throw new Exception('La hora de entrada debe ser menor a la hora de salida.', 418);
+				}
+
+				if ( ClientesEventos::Filtro()
+																	->where('id_cliente', $id)
+																	->where('nu_dia', $body->nu_dia)
+																	->where('tm_entrada', $tm_entrada->toTimeString() )
+																	->where('tm_salida', $tm_salida->toTimeString() )
+																	->exists() ) {
+					throw new Exception('Este horario en la agenda '.$cliente->vc_nombre.' ya esta registrado', 418);
+				}
+
+				
+
+                // Se crea el registro de la hora de la agenda
+                
+				ClientesEventos::create([
+					'id_cliente' 	=> $id,
+					'id_evento' 	=> $body->id_evento,
+					'nu_dia' 		=> $body->nu_dia,
+					'nu_mes' 		=> $body->nu_mes,
+					'tm_entrada' 	=> $tm_entrada->toTimeString(),
+					'tm_salida' 	=> $tm_salida->toTimeString(),
+					'id_creador' 	=> $body->usuario->id
+				]);
+
+				DB::commit();
+				return ['texto' => 'El horario de la agenda '. $cliente->vc_nombre .', fue creado correctamente.'];
+			} catch (Exception $e) {
+				DB::rollBack();
+				return Response::json(['texto' => $e->getMessage()], 418);
+			}
+
+        }
+        
+		public function eventoGetById($id){
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+					 return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			$clientesEventos = ClientesEventos::Filtro()->with('cliente')->findOrFail($id);
+			$clientesEventos->tm_entrada 	=  new Carbon($clientesEventos->tm_entrada);
+			$clientesEventos->tm_salida 	=  new Carbon($clientesEventos->tm_salida);
+
+			return $clientesEventos;
+		}
 
     /**
      * Remove the specified resource from storage.

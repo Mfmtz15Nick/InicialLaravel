@@ -32,11 +32,15 @@
                             { state: 'tiposEventosEditar', url: 'tiposEventos/:id/editar', file: 'tiposEventosNuevo', ext: 'html' },
                             { state: 'tiposEventosGaleria', url: 'tiposEventos/:id/galeria', file: 'tiposEventosGaleria', ext: 'html' },
                         
-                        // USUARIOS
+                        // Clientes
                             { state: 'clientes', url: 'clientes', file: 'clientes', ext: 'html' },
                             { state: 'clientesNuevo', url: 'clientes/nuevo', file: 'clientesNuevo', ext: 'html' },
                             { state: 'clientesEditar', url: 'clientes/:id/editar', file: 'clientesNuevo', ext: 'html' },
-                        
+
+                            { state: 'clientesEventos', url: 'clientes/:id/eventos', file: 'clientesEventos', ext: 'html' },
+                            { state: 'clientesEventosNuevo', url: 'clientes/:id/eventos/nuevo', file: 'clientesEventosNuevo', ext: 'html' },
+                            { state: 'clientesEventosEditar', url: 'clientes/:id/eventos/:idDia/:idMes/editar', file: 'clientesEventosNuevo', ext: 'html' },
+
                         // Eventos
                             { state: 'eventos', url: 'eventos', file: 'eventos', ext: 'html' },
                             { state: 'eventosNuevo', url: 'eventos/nuevo', file: 'eventosNuevo', ext: 'html' },

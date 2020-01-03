@@ -270,6 +270,34 @@ SET FOREIGN_KEY_CHECKS=0;
   CONSTRAINT FK_eventosImagenes_eventos FOREIGN KEY( id_evento ) REFERENCES eventos ( id )
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
+/* Tabla de clientesEventos */
+DROP TABLE IF EXISTS clientesEventos;
+CREATE TABLE clientesEventos(
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  id_cliente INT UNSIGNED NOT NULL,
+  id_evento INT UNSIGNED NOT NULL,
+
+  nu_dia SMALLINT(7) NOT NULL,
+  nu_mes SMALLINT(10) NOT NULL,
+
+
+  tm_entrada TIME NULL,
+  tm_salida TIME NULL,
+
+  sn_activo TINYINT NOT NULL DEFAULT 1,
+  sn_eliminado TINYINT NOT NULL DEFAULT 0,
+  dt_registro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  dt_editado TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  dt_eliminado TIMESTAMP NULL,
+  id_creador INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY( id ),
+  FOREIGN KEY( id_creador ) REFERENCES usuarios ( id ),
+  FOREIGN KEY( id_cliente ) REFERENCES clientes ( id ),
+  FOREIGN KEY( id_evento ) REFERENCES eventos ( id )
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+
 
 
 -- INSERT

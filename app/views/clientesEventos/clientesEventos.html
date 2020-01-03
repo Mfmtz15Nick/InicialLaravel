@@ -3,20 +3,22 @@
 | Geeklopers - Document HTML
 |==========================================================================
 |
-| - Vista de eventos
+| - Vista de clientesEventos
 |
 -->
 
-<div class="view eventos" ng-controller="eventosController">
+<div class="view clientesEventos" ng-controller="clientesEventosController">
 
 	<div class="container-fluid">
 		<div class="row header">
 			<div class="col-sm-6 ccs-title">
-				<h2>Eventos</h2>
+				<h2>Eventos de Clientes</h2>
 				<ul>
 					<li><span><a href="#/inicio">Inicio</a></span></li>
-					<li><span> / Eventos</span></li>
+					<li><span> / <a href="#/clientes">Clientes</a></span></li>
+          <li><span> / Eventos</span></li>
 				</ul>
+        <h3>Cliente: [[ cliente.detalle.vc_nombre ]] [[cliente.detalle.vc_apellido]] </h3>
 			</div>
 			<div class="col-sm-6 ccs-buttons">
 				<button class="btn btn-info" ng-click="actualizar()">
@@ -26,15 +28,7 @@
 				<button class="btn btn-success" ng-click="agregar()"><i class="fa fa-plus fa-fw"></i> Crear nuevo</button>
 			</div>
 		</div>
-		<div class="row tools-default">
-			<div class="col-sm-6 search-default">
-				<div class="input-group">
-					<span class="input-group-addon"><i class="fa fa-search fa-fw"></i></span>
-					<input type="text" class="form-control" placeholder="Buscar deventos" ng-model="filter">
-				</div>
-			</div>
-		</div>
-		<br><br>
+
 
 		<div class="row section">
 			<div class="col-xs-12">
@@ -46,40 +40,34 @@
 						<div class="table-responsive">
 							<table class="table">
 								<thead>
-									<th width="30"><i class="ti-medall"></i></th>
+									<th width="30"><i class="ti-user"></i></th>
 									<th>Evento</th>
-									<th>Tipo de Evento</th>
-									<th></th>
-									<!-- <th>Destacado</th> -->
-									<th width="61"></th>
-									<th width="61"></th>
+									<th>Fecha</th>
+									<th>Hora</th>
 									<th width="61"></th>
 								</thead>
 								<tbody>
-									<tr ng-repeat="evento in eventos | filter: filter">
-										<td><i class="ti-medall"></i></td>
-										<td>[[ evento.detalle.vc_nombre ]]</td>
-										<td>[[ evento.detalle.tipos_eventos.vc_nombre ]]</td>
-										<td> </td>
-										<!-- <td ng-if="evento.detalle.sn_destacado == 0">NO</td>
-										<td ng-if="evento.detalle.sn_destacado == 1">SI</td> -->
-										<td>
-											<a ng-click = "galeria(evento)" class="tooltip">
-												<i class="fa fa-image fa-fw"></i>
-													<span class="tooltiptext">Galería</span>
-											</a>
-										</td>
-										<td>
-											<a ng-click = "editar(evento)" class="tooltip" >
+									<tr ng-repeat="evento in cliente.eventos">
+										<td><i class="ti-user"></i></td>
+										<td> [[ evento.nombre_evento.vc_nombre ]] </td>
+										<td>[[ evento.nu_dia ]] / [[ evento.nu_mes ]]</td>
+										<td>[[ evento.tm_entrada ]] - [[ evento.tm_salida ]]</td>
+										<td ng-if="!consultor" >
+											
+											<td>
+											<a  ng-click = "editar(evento)" class="tooltip" >
 												<i class="fa fa-pencil fa-fw"></i>
 												<span class="tooltiptext">Editar</span>
-											</a>
-										</td>
-										<td>
+											</a >
+											
+											</td>
+											<td>
 											<a ng-click = "eliminar(evento)" class="tooltip" >
 												<i class="fa fa-trash fa-fw"></i>
 												<span class="tooltiptext">Eliminar</span>
 											</a>
+											</td>
+										
 										</td>
 									</tr>
 								</tbody>
@@ -87,7 +75,7 @@
 						</div>
 					</div>
 				</div>
-					<!-- <nav aria-label="Paginador de eventos" class="text-center" ng-hide="total < totalMostrarPaginado">
+					<nav aria-label="Paginador de clientes" class="text-center" ng-hide="total < totalMostrarPaginado">
 						<ul class="pagination">
 							<li class="page-item" ng-hide="anteriorUrl == null">
 							<a class="page-link previous" nohref ng-click="cambiarPagina(anteriorUrl)" aria-label="Previous">
@@ -117,7 +105,7 @@
 								</a>
 							  </li>
 							</ul>
-						  </nav> -->
+						  </nav>
 			</div>
 		</div>
 	</div>

@@ -16,6 +16,17 @@ class Clientes extends BaseModel
     {
         return $this->hasOne('App\Models\ClientesDetalles', 'id_cliente');
     }
+   
+    public function eventos()
+    {
+        return $this->hasMany('App\Models\ClientesEventos', 'id_cliente');
+    }
+    
+   
+    
+
+   
+    
 
 
 }

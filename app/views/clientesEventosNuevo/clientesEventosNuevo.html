@@ -1,0 +1,108 @@
+<!--
+|==========================================================================
+| Geeklopers - Document HTML
+|==========================================================================
+|
+| - Vista de clientesEventosNuevo
+|
+-->
+
+<div class="view clientesEventosNuevo" ng-controller="clientesEventosNuevoController">
+
+	<div class="container-fluid">
+		<div class="row header">
+			<div class="col-sm-8 ccs-title">
+				<h2>clientes</h2>
+				<ul>
+					<li><span><a href="#/inicio">Inicio</a></span></li>
+					<li><span> / <a href="#/clientes">clientes</a></span></li>
+          <li><span> / <a href="#/clientes/[[cliente.id]]/eventos">eventos</a></span></li>
+					<li>
+						<span ng-show="!flags.editar"> / Nuevo</span>
+						<span ng-show="flags.editar"> / Editar</span>
+					</li>
+				</ul>
+        <h3>cliente: [[cliente.vc_nombre]]</h3>
+			</div>
+			<div class="col-sm-4 ccs-buttons">
+				<button class="btn btn-info" ng-click="regresar()">
+					<i class="fa fa-arrow-left fa-fw"></i> Regresar
+				</button>
+				<button class="btn btn-success" ng-click="guardar()">
+					<i class="fa fa-hdd-o fa-fw"></i> <span ng-if="!flags.editar">Guardar</span><span ng-if="flags.editar">Actualizar</span>
+				</button>
+			</div>
+		</div>
+
+		<div class="row section">
+			<div class="col-xs-12">
+				<div class="panel ccs-panel">
+					<div class="panel-heading">
+						<h5>Formulario</h5>
+					</div>
+					<div class="panel-body">
+						<form onSubmit="return false;" ng-submit="guardar()" class="form-validate form-horizontal bordered-row">
+
+              <div class="form-group">
+                <label class="col-sm-3 control-label">Dia</label>
+                <div class="col-sm-6">
+                        <input type="number" class="form-control required" ng-model="evento.nu_dia" placeholder="">
+
+                </div>
+              </div>
+
+ 						<div class="form-group">
+                <label class="col-sm-3 control-label">Mes</label>
+                <div class="col-sm-6">
+  								<select class="form-control required" ng-model="evento.nu_mes" ng-disabled = "flags.editar">
+                    <option value="">Seleccionar Dia...</option>
+                    <option ng-repeat ="mes in meses" value="[[ mes.id ]]">[[ mes.vc_nombre ]]</option>
+                  </select>
+                </div>
+              </div>
+
+								<div class="form-group">
+                <label class="col-sm-3 control-label">Evento</label>
+                <div class="col-sm-6">
+  								<select class="form-control required" ng-model="evento.id_evento" ng-disabled = "flags.editar">
+                    <option value="">Seleccionar Evento...</option>
+                    <option ng-repeat ="evento in tiposEventos" value="[[ evento.id ]]">[[ evento.vc_nombre ]]</option>
+                  </select>
+                </div>
+              </div>
+
+
+			 
+
+              <!-- eventO GENERAL  -->
+              <div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Hora de entrada</label>
+                    <div class="col-sm-6">
+                        <input type="time" class="form-control required" ng-model="evento.tm_entrada" placeholder="">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">Hora de salida</label>
+                    <div class="col-sm-6">
+                        <input type="time" class="form-control required" ng-model="evento.tm_salida" placeholder="">
+                    </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+              	<div class="content-box text-center">
+                  	<button class="btn btn-success">
+												<i class="fa fa-hdd-o fa-fw"></i> <span ng-if="!flags.editar">Guardar</span><span ng-if="flags.editar">Actualizar</span>
+                  	</button>
+              	</div>
+              </div>
+            </form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
