@@ -307,9 +307,61 @@ class ClientesController extends Controller
 
 			$clientesEventos = ClientesEventos::Filtro()->with('cliente')->findOrFail($id);
 			$clientesEventos->tm_entrada 	=  new Carbon($clientesEventos->tm_entrada);
-			$clientesEventos->tm_salida 	=  new Carbon($clientesEventos->tm_salida);
+            $clientesEventos->tm_salida 	=  new Carbon($clientesEventos->tm_salida);
 
-			return $clientesEventos;
+            $tiposEventos = EventosDetalles::Filtro()->get();
+            // return $clientes;
+            return [ 'clientesEventos' => $clientesEventos, 'tiposEventos' => $tiposEventos ];
+
+        }
+        public function horarioUpdate($id){
+
+			// Verificación para el uso del Controllador
+			$body = (Object)Request::all();
+
+			if (!$this->validateController($body->usuario)) {
+					 return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+			}
+
+			// Validacion de parametros
+			$validator = Validator::make((array)$body, [
+					'nu_dia'      		=> 'required',
+					'tm_entrada'     	=> 'required',
+					'tm_salida'      	=> 'required'
+			]);
+
+			if ($validator->fails()) {
+					return Response::json(['texto' => 'Asegurese de ingresar los datos necesarios.'], 418);
+			}
+
+			try {
+				DB::beginTransaction();
+
+				$clienteEvento = ClientesEventos::Filtro()->with('cliente')->findOrFail($id);
+
+				// Se crea las horas como Carbon
+			 	$tm_entrada = new Carbon($body->tm_entrada);
+				$tm_salida 	= new Carbon($body->tm_salida);
+				// Se restan 7 horas por la zona horaria
+				$tm_entrada = $tm_entrada->subHours(7);
+				$tm_salida  = $tm_salida->subHours(7);
+				// Se valida si la hora de entrada es menor a la hora de salida
+				if ( $tm_entrada->greaterThanOrEqualTo($tm_salida) ) {
+					throw new Exception('La hora de entrada debe ser menor a la hora de salida.', 418);
+				}
+
+			
+
+				$clienteEvento->tm_entrada 	= $tm_entrada->toTimeString();
+				$clienteEvento->tm_salida 	= $tm_salida->toTimeString();
+				$clienteEvento->save();
+
+				DB::commit();
+				return ['texto' => 'El horario de la agenda '. $clienteEvento->agenda->vc_nombre .', fue actualizado correctamente.'];
+			} catch (Exception $e) {
+				DB::rollBack();
+				return Response::json(['texto' => $e->getMessage()], 418);
+			}
 		}
 
     /**
@@ -349,6 +401,34 @@ class ClientesController extends Controller
             DB::rollBack();
             return Response::json(['texto' => $e->getMessage()], 418);
         }
+    }
+
+    public function eventoDelete($id){
+
+        // Verificación para el uso del Controllador
+        $body = (Object)Request::all();
+
+        if (!$this->validateController($body->usuario)) {
+                 return Response::json(['texto' => 'Actualmente no cuenta con los permisos necesarios.'], 418);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $clienteEvento = ClientesEventos::Filtro()->with('cliente')->findOrFail($id);
+            $clienteEvento->sn_activo 		= self::INACTIVO;
+            $clienteEvento->sn_eliminado 	= self::ACTIVO;
+            $clienteEvento->save();
+            $clienteEvento->delete();
+
+            DB::commit();
+            return ['texto' => 'El evento del cliente '. $clienteEvento->cliente->vc_nombre .', fue eliminado correctamente.'];
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::info(['texto' => $e->getMessage()]);
+            return Response::json(['texto' => $e->getMessage()], 418);
+        }
+
     }
 
 }

@@ -16,7 +16,7 @@ app.controller( 'clientesEventosNuevoController', ['$scope', '$rootScope', '$sta
 // Scope Variables
     $scope.cliente      = {};
     $scope.tiposEventos = [];
-    $scope.evento     = { tm_entrada: '', tm_salida: '', nu_dia:'', id_evento:'' };
+    $scope.evento     = { tm_entrada: '', tm_salida: '', nu_dia:'',id_evento:1 };
     $scope.meses        = [
       {
       id: 1, vc_nombre: 'Enero'
@@ -107,7 +107,7 @@ app.controller( 'clientesEventosNuevoController', ['$scope', '$rootScope', '$sta
                     if(error.texto){
                         $message.warning(error.texto);
                     } else {
-                        $message.warning('El evento de la cliente '+$scope.cliente.vc_nombre+', no se pudo editar correctamente.');
+                        $message.warning('El evento del cliente '+$scope.cliente.vc_nombre+', no se pudo editar correctamente.');
                     }
                 })
                 .finally(function(){
@@ -135,14 +135,19 @@ app.controller( 'clientesEventosNuevoController', ['$scope', '$rootScope', '$sta
 
               ModelService.custom('get', 'api/clientes/eventos/' + $stateParams.idDia )
                   .success(function(res){
-                    console.log(res);
-                    $scope.cliente  = res.cliente;
-                    $scope.evento = res;
+
+                        console.log('que tengo ' + res.tiposEventos[0].vc_nombre)
                     $scope.tiposEventos           = res.tiposEventos;
-                    $scope.evento.tm_entrada = new Date(res.tm_entrada.date);
-                    $scope.evento.tm_salida  = new Date(res.tm_salida.date);
-                    $scope.evento.nu_dia     = ''+res.nu_dia;
-                    $scope.evento.nu_mes     = ''+res.nu_mes;
+                    $scope.cliente  = res.clientesEventos.cliente;
+                      
+                      
+                    
+                    $scope.evento = res.clientesEventos;
+                    $scope.evento.tm_entrada = new Date(res.clientesEventos.tm_entrada.date);
+                    $scope.evento.tm_salida  = new Date(res.clientesEventos.tm_salida.date);
+                    $scope.evento.nu_dia     = ''+res.clientesEventos.nu_dia;
+                    $scope.evento.nu_mes     = ''+res.clientesEventos.nu_mes;
+                    $scope.evento.id_evento  = ''+res.clientesEventos.id_evento;
                   })
                   .error(function (error) {
                       if(error.texto){

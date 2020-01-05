@@ -39,7 +39,7 @@
 
                             { state: 'clientesEventos', url: 'clientes/:id/eventos', file: 'clientesEventos', ext: 'html' },
                             { state: 'clientesEventosNuevo', url: 'clientes/:id/eventos/nuevo', file: 'clientesEventosNuevo', ext: 'html' },
-                            { state: 'clientesEventosEditar', url: 'clientes/:id/eventos/:idDia/:idMes/editar', file: 'clientesEventosNuevo', ext: 'html' },
+                            { state: 'clientesEventosEditar', url: 'clientes/:id/eventos/:idDia/editar', file: 'clientesEventosNuevo', ext: 'html' },
 
                         // Eventos
                             { state: 'eventos', url: 'eventos', file: 'eventos', ext: 'html' },

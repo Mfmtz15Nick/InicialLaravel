@@ -38,16 +38,15 @@ app.controller( 'clientesEventosController', ['$scope', '$rootScope', '$state', 
     };
 
     $scope.eliminar = function( evento, eventoDia ) {
+    
+    
       $message.confirm({
-          text    : '¿Estás seguro de eliminar el evento de '+ eventoDia.tm_entrada  +' a '+ eventoDia.tm_salida +' del dia ' +evento.vc_nombre+'?',
+          text    : '¿Estás seguro de eliminar el evento con id ' +evento.i+'?',
           callback : function( msg ){
               $loading.show();
-              ModelService.custom('delete', 'api/clientes/eventos/'+ eventoDia.id )
+              ModelService.custom('delete', 'api/clientes/eventos/'+ evento.id )
                   .success(function(result){
                       msg.close();
-                      var posicionDia     = $util.getPosition($scope.eventos, 'id', evento.id);
-                      var posicionevento = $util.getPosition($scope.eventos[posicionDia].eventos, 'id', eventoDia.id);
-                      $scope.eventos[posicionDia].eventos.splice( posicionevento, 1 );
                       $message.success(result.texto);
                   })
                   .error(function (error) {

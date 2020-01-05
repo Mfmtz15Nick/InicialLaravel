@@ -46,8 +46,7 @@
               <div class="form-group">
                 <label class="col-sm-3 control-label">Dia</label>
                 <div class="col-sm-6">
-                        <input type="number" class="form-control required" ng-model="evento.nu_dia" placeholder="">
-
+                        <input type="text" class="form-control required" ng-model="evento.nu_dia" placeholder="">
                 </div>
               </div>
 
@@ -64,7 +63,7 @@
 								<div class="form-group">
                 <label class="col-sm-3 control-label">Evento</label>
                 <div class="col-sm-6">
-  								<select class="form-control required" ng-model="evento.id_evento" ng-disabled = "flags.editar">
+  								<select class="form-control required" ng-model="evento.id_evento" >
                     <option value="">Seleccionar Evento...</option>
                     <option ng-repeat ="evento in tiposEventos" value="[[ evento.id ]]">[[ evento.vc_nombre ]]</option>
                   </select>
